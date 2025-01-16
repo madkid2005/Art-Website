@@ -1,0 +1,28 @@
+@font-face {
+  font-family: "Homa";
+  src: url(./assets/font/BHoma.ttf);
+}
+
+@font-face {
+  font-family: "IranYekan";
+  src: url(./assets/font/IRANYekanWeb.ttf);
+}
+
+.font-Homa{
+  font-family: "Homa";
+  
+}
+
+body {
+  margin: 0;
+  font-family: "IranYekan", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
