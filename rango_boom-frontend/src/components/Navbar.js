@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import logo from "../assets/images/logo.png";
-// import categoryGif from "../assets/images/categorygif.gif";
-import "./Navbar.css";
 import axios from "axios";
 
 export default function Navbar() {
   const [categories, setCategories] = useState([]);
-  const [showdastebandi, setShowdastebandi] = useState(false);
+  const [showPanels, setShowPanels] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
+  const [childrenList, setChildrenList] = useState([]);
 
   useEffect(() => {
     axios
@@ -15,93 +14,42 @@ export default function Navbar() {
       .then((response) => {
         setCategories(response.data);
         console.log(response.data);
-        
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
       });
   }, []);
 
-  const hoverdastebandi = () => setShowdastebandi(true);
-  const unhoverdastebandi = () => {
-    setShowdastebandi(false);
-    setHoveredCategory(null);
+  const handleCategoryClick = () => {
+    setShowPanels((prevState) => !prevState); // Toggle پنل‌ها
+    if (showPanels) {
+      setHoveredCategory(null);
+      setChildrenList([]);
+    }
   };
 
-  const handleMouseEnter = (categoryId) => setHoveredCategory(categoryId);
-  const handleMouseLeave = () => setHoveredCategory(null);
+  const handleMouseEnter = (category) => {
+    setHoveredCategory(category.id);
+    setChildrenList(category.children || []);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredCategory(null);
+    setChildrenList([]);
+  };
 
   return (
     <div className="container">
       <div className="row mb-2 border-bottom">
         {/* دسته‌بندی */}
-        <div
-          onMouseEnter={hoverdastebandi}
-          onMouseLeave={unhoverdastebandi}
-          className="col-md-4 mt-3"
-        >
-          <button className="btn d-flex align-items-center">
+        <div className="col-md-4 mt-3 position-relative">
+          <button
+            className="btn d-flex align-items-center"
+            onClick={handleCategoryClick}
+          >
             <span className="h5 mx-2">دسته بندی</span>
             <i className="bi bi-telephone-outbound fw-bold fs-4 text-success"></i>
           </button>
-          <div >
-            {showdastebandi && (
-              <div  className="row position-relative">
-                {categories.map((category) => (
-                  <div
-                    key={category.id}
-                    className="category position-relative"
-                    onMouseEnter={() => handleMouseEnter(category.id)}
-                    onMouseLeave={handleMouseLeave}
-                    style={{
-                      padding: "10px",
-                      borderBottom: "1px solid #ddd",
-                      cursor: "pointer",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                  >
-                    <span>{category.name}</span>
-                    {/* زیرمجموعه‌ها */}
-                    {hoveredCategory === category.id &&
-                      category.children &&
-                      category.children.length > 0 && (
-                        <div
-                          className="children"
-                          style={{
-                            position: "absolute",
-                            top: "0",
-                            left: "100%",
-                            backgroundColor: "white",
-                            border: "1px solid #ddd",
-                            borderRadius: "5px",
-                            padding: "10px",
-                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                            maxHeight: "200px",
-                            overflowY: "auto",
-                            width: "200px",
-                            zIndex: "1000",
-                          }}
-                        >
-                          {category.children.map((child) => (
-                            <div
-                              key={child.id}
-                              style={{
-                                padding: "5px",
-                                borderBottom: "1px solid #f0f0f0",
-                                cursor: "pointer",
-                              }}
-                              onClick={() => alert(`انتخاب شد: ${child.name}`)}
-                            >
-                              {child.name}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* لوگو */}
@@ -126,6 +74,73 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* پنل دسته‌بندی و زیرمجموعه‌ها */}
+      {showPanels && (
+        <div className="row">
+          {/* پنل دسته‌بندی‌ها */}
+          <div
+            className="col-3"
+            style={{
+              height: "300px",
+              overflowY: "auto",
+              border: "1px solid #ddd",
+              borderRadius: "5px",
+              backgroundColor: "#f9f9f9",
+              padding: "10px",
+            }}
+          >
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                className="category"
+                onMouseEnter={() => handleMouseEnter(category)}
+                style={{
+                  padding: "10px",
+                  borderBottom: "1px solid #ddd",
+                  cursor: "pointer",
+                  backgroundColor:
+                    hoveredCategory === category.id ? "#e6f7ff" : "#f9f9f9",
+                }}
+              >
+                <span>{category.name}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* پنل زیرمجموعه‌ها */}
+          <div
+            className="col-4"
+            style={{
+              hheight: "300px",
+              overflowY: "auto",
+              border: "1px solid #ddd",
+              backgroundColor: "white",
+              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(100px, 0.1fr))", // تعداد ستون‌ها و عرض هر ستون
+              gridAutoFlow: "row", // پر کردن ستون‌ها به صورت عمودی (ستون‌ها اول پر می‌شوند)
+            }}
+          >
+            {childrenList.length > 0 ? (
+              childrenList.map((child) => (
+                <div
+                  key={child.id}
+                  style={{
+                    cursor: "pointer",
+                    textAlign: "center",
+                  }}
+                  onClick={() => alert(`انتخاب شد: ${child.name}`)}
+                >
+                  {child.name}
+                </div>
+              ))
+            ) : (
+              <div style={{ color: "#999" }}>زیرمجموعه‌ای وجود ندارد</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
