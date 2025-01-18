@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import logo from "../assets/images/logo.png";
 import axios from "axios";
+import "./Navbar.css"
 
 export default function Navbar() {
   const [categories, setCategories] = useState([]);
@@ -40,15 +41,19 @@ export default function Navbar() {
 
   return (
     <div className="container">
-      <div className="row mb-2 border-bottom">
+      <div className="row mb-2 border-bottom align-items-center">
         {/* دسته‌بندی */}
         <div className="col-md-4 mt-3 position-relative">
           <button
-            className="btn d-flex align-items-center"
+            className="btn d-flex align-items-center btn "
             onClick={handleCategoryClick}
+            style={{
+              transition: "all 0.3s ease-in-out",
+              borderRadius: "8px",
+            }}
           >
-            <span className="h5 mx-2">دسته بندی</span>
-            <i className="bi bi-telephone-outbound fw-bold fs-4 text-success"></i>
+            <i className="bi bi-grid-fill fw-bold fs-4 text-primary"></i>
+            <span className=" mx-2">دسته بندی</span>
           </button>
         </div>
 
@@ -77,7 +82,11 @@ export default function Navbar() {
 
       {/* پنل دسته‌بندی و زیرمجموعه‌ها */}
       {showPanels && (
-        <div className="row">
+        <div
+          className="row mt-3"
+          onMouseLeave={handleMouseLeave} // رویداد خروج موس برای کل پنل
+          style={{ position: "relative" }}
+        >
           {/* پنل دسته‌بندی‌ها */}
           <div
             className="col-3"
@@ -85,24 +94,29 @@ export default function Navbar() {
               height: "300px",
               overflowY: "auto",
               border: "1px solid #ddd",
-              borderRadius: "5px",
-              backgroundColor: "#f9f9f9",
+              borderRadius: "8px",
+              backgroundColor: "#f1f1f1",
               padding: "10px",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+              transition: "all 0.3s ease",
             }}
           >
             {categories.map((category) => (
               <div
                 key={category.id}
-                className="category"
+                className="category rightanim"
                 onMouseEnter={() => handleMouseEnter(category)}
                 style={{
                   padding: "10px",
                   borderBottom: "1px solid #ddd",
                   cursor: "pointer",
+                  borderRadius: "5px",
+                  transition: "background-color 0.3s ease",
                   backgroundColor:
-                    hoveredCategory === category.id ? "#e6f7ff" : "#f9f9f9",
+                    hoveredCategory === category.id ? "#fff" : "transparent",
                 }}
               >
+                <i className="bi bi-folder2-open mx-2 text-primary"></i>
                 <span>{category.name}</span>
               </div>
             ))}
@@ -110,29 +124,45 @@ export default function Navbar() {
 
           {/* پنل زیرمجموعه‌ها */}
           <div
-            className="col-4"
+            className="col-6"
             style={{
-              hheight: "300px",
+              height: "300px",
               overflowY: "auto",
               border: "1px solid #ddd",
               backgroundColor: "white",
+              borderRadius: "8px",
               boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              padding: "10px",
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(100px, 0.1fr))", // تعداد ستون‌ها و عرض هر ستون
-              gridAutoFlow: "row", // پر کردن ستون‌ها به صورت عمودی (ستون‌ها اول پر می‌شوند)
+              gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
+              gap: "10px",
+              transition: "all 0.3s ease",
             }}
           >
             {childrenList.length > 0 ? (
               childrenList.map((child) => (
                 <div
                   key={child.id}
+                  className="text-center p-2 shadow"
                   style={{
                     cursor: "pointer",
-                    textAlign: "center",
+                    borderRadius: "5px",
+                    border: "1px solid #ddd",
+                    transition: "transform 0.2s ease, background-color 0.2s",
+                    backgroundColor: "#f9f9f9",
+                    alignContent:"center",
                   }}
                   onClick={() => alert(`انتخاب شد: ${child.name}`)}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#e6f7ff")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "#f9f9f9")
+                  }
                 >
-                  {child.name}
+                  <i className="bi bi-box-seam text-success fs-4 icon-hover"></i>
+
+                  <div>{child.name}</div>
                 </div>
               ))
             ) : (
@@ -141,6 +171,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
     </div>
   );
 }

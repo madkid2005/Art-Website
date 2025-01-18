@@ -76,5 +76,23 @@
   .children .child:hover {
     background-color: #f0f0f0; /* رنگ پس‌زمینه در حالت هاور */
   }
-
+  .rightanim:hover {
+    transform: translateX(10px);
+    transition: transform 0.8s ease-in-out; /* حرکت نرم و طولانی‌تر */
+  }
+  @keyframes colorChange {
+    0% { color: rgb(255, 0, 0); }   /* قرمز */
+    25% { color: rgb(0, 255, 0); }  /* سبز */
+    50% { color: rgb(0, 0, 255); }  /* آبی */
+    75% { color: rgb(255, 255, 0); } /* زرد */
+    100% { color: rgb(255, 0, 0); } /* بازگشت به قرمز */
+  }
+  
+  .icon-hover {
+    transition: transform 0.5s ease; /* فقط چرخش (اگر لازم شد) */
+  }
+  
+  .icon-hover:hover {
+    animation: colorChange 1s infinite linear;  /* تغییر رنگ سریع */
+  }
   
