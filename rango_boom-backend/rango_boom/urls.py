@@ -5,9 +5,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/store/', include('store.urls')),
-    path('api/sellers/', include('sellers.urls')),
-    path('api/buyers/', include('buyers.urls')),
+    path('api/store/', include('apps.store.urls')),
+    path('api/sellers/', include('apps.sellers.urls')),
+    path('api/buyers/', include('apps.buyers.urls')),
 
 ]
 # Serve media files during development

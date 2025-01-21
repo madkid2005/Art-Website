@@ -40,7 +40,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="container">
+    <div className="container d-none d-md-block">
       <div className="row mb-2 border-bottom align-items-center">
         {/* دسته‌بندی */}
         <div className="col-md-4 mt-3 position-relative">
@@ -154,7 +154,7 @@ export default function Navbar() {
                   }}
                   onClick={() => alert(`انتخاب شد: ${child.name}`)}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = "#e6f7ff")
+                    (e.currentTarget.style.backgroundColor = "#fff")
                   }
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.backgroundColor = "#f9f9f9")

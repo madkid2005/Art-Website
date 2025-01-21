@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
 import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
-import Register from './components/Register';
+import SingtuSeller from './components/SingupSeller';
+import SingupBuyer from './components/SingupBuyer';
 
 export default function App() {
   return (
@@ -12,7 +13,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/SingupSeller" element={<SingtuSeller />} />
+          <Route path="/SingupBuyer" element={<SingupBuyer />} />
         </Routes>
       </Router>
     </div>

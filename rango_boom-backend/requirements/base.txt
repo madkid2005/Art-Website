@@ -1,0 +1,11 @@
+Django
+djangorestframework
+django-cors-headers
+django-filter
+psycopg
+channels
+channels-redis
+Pillow
+celery
+redis
+django-treebeard

@@ -10,19 +10,30 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Dependet
+
+    # rest_framework
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework.authtoken',
+
+    # Dependencies
     'django_filters',
     'corsheaders',
-    # Apps
-    'store',
-    'sellers',
-    'buyers',
+    'treebeard',
+    'channels',
+
+    # Apps    
+    'apps.buyers',
+    'apps.store',
+    'apps.sellers',
+    'apps.orders',
 
 
 ]
@@ -30,12 +41,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 
 ]
 
@@ -58,6 +69,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'rango_boom.wsgi.application'
+ASGI_APPLICATION = 'rango_boom.asgi.application'
 
 DATABASES = {
     'default': {
@@ -81,19 +93,31 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django Rest Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Custom User
+AUTH_USER_MODEL = 'sellers.CustomUser'
+
+# Region and location
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# Media and static
 STATIC_URL = 'static/'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CORS_ALLOW_ALL_ORIGINS = True
-
-# Media files (uploaded by users)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-AUTH_USER_MODEL = 'sellers.CustomUser'
+# CORS hEADERS
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+
