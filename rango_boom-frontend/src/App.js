@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Dashboard from './components/Dashboard';
 import SingtuSeller from './components/SingupSeller';
 import SingupBuyer from './components/SingupBuyer';
+import Product from './components/Product';
 
 export default function App() {
   return (
@@ -22,5 +23,7 @@ export default function App() {
 }
 
 function Home() {
-  return <div>صفحه اصلی</div>;
+  return <div>
+  <Product/>
+  صفحه اصلی</div>;
 }
