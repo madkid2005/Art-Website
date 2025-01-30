@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('grappelli/', include('grappelli.urls')),  # Grappelli admin URLs
     path('admin/', admin.site.urls),
     path('api/store/', include('apps.store.urls')),
     path('api/sellers/', include('apps.sellers.urls')),

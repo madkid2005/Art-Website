@@ -1,16 +1,19 @@
 from pathlib import Path
 import os
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 SECRET_KEY = 'django-insecure-!4-aziegqq)3j$l&+3ayomdq0!tp=f-sx2q-rel8h#0#ky0)nm'
-
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
-
+    # admin panel custom
+    'mptt',
+    # 'mptt_admin',
+    'grappelli',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,20 +41,31 @@ INSTALLED_APPS = [
 
 ]
 
+# Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',   # Header
+
+    'django.middleware.locale.LocaleMiddleware',  # language
+
+    'django.middleware.common.CommonMiddleware',
+
+    'django.middleware.csrf.CsrfViewMiddleware', # CSRF 
+
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    'django.contrib.messages.middleware.MessageMiddleware',
+
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Url root path
 ROOT_URLCONF = 'rango_boom.urls'
 
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -68,9 +82,11 @@ TEMPLATES = [
     },
 ]
 
+# Wsgi and Asgi
 WSGI_APPLICATION = 'rango_boom.wsgi.application'
 ASGI_APPLICATION = 'rango_boom.asgi.application'
 
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -78,6 +94,7 @@ DATABASES = {
     }
 }
 
+# Pass security
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -106,9 +123,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'sellers.CustomUser'
 
 # Region and location
-LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
 # Media and static
@@ -119,5 +136,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # CORS hEADERS
 CORS_ALLOW_ALL_ORIGINS = True
 
+# Admin panel
+MPTT_ADMIN_LEVEL_INDENT = 20 
 
-
+LANGUAGE_CODE = 'fa'
+LANGUAGES = [
+    ('en', _('English')),
+    ('fa', _('Persian')),
+]

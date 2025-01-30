@@ -1,16 +1,28 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, Rating, Banner
 from django.utils.safestring import mark_safe
-from mptt.admin import DraggableMPTTAdmin
 from django.utils.html import format_html  
+from mptt.admin import MPTTModelAdmin
+from django.utils.translation import gettext_lazy as _
 
+# Child Category Adding 
+class SubCategoryInline(admin.TabularInline):
+    model = Category
+    fields = ('name', 'slug', 'icon')
+    extra = 1
+    prepopulated_fields = {'slug': ('name',)}
+
+# Category
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent_category', 'icon_preview')
-    list_filter = ('parent_category',)
+class CategoryAdmin(MPTTModelAdmin):
+    list_display = ('name', 'parent', 'icon_preview', 'slug')
     search_fields = ('name',)
-    fields = ('name', 'parent_category', 'icon', 'icon_preview')
-    readonly_fields = ('icon_preview',)
+    list_filter = ('parent',)
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = [SubCategoryInline]
+    autocomplete_fields = ['parent']
+    mptt_level_indent = 20  # Optional: Controls indentation for tree structure
+    verbose_name = _("دسته بندی ها")  # Custom translation
 
     def icon_preview(self, obj):
         if obj.icon:
@@ -19,17 +31,48 @@ class CategoryAdmin(admin.ModelAdmin):
 
     icon_preview.short_description = "Icon Preview"
 
-    def get_queryset(self, request):
-        """Customize queryset to order categories hierarchically."""
-        queryset = super().get_queryset(request)
-        return queryset.order_by('parent_category__id', 'name')
-
+# Products
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'price', 'stock', 'category', 'image_preview', 'created_at', 'seller',]
-    list_filter = ['category']
-    search_fields = ['name', 'description']
-    ordering = ['-created_at', 'category']
+    list_display = ('name', 'category', 'seller', 'formatted_price', 'stock', 'is_on_sale', 'image_preview',)
+    list_filter = ('category', 'seller', 'is_on_sale')
+    search_fields = ('name', 'description')
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = _("مدیریت محصولات")  # Custom translation
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(f'<img src="{obj.image.url}" style="width: 50px; height: 50px;" />')
+        return "No Product Image"
+    
+    # Price
+    def formatted_price(self, obj):
+        return f"{obj.price:,.0f} Toman"  # Format with commas and add "Toman"
+    
+    formatted_price.short_description = "Price (Toman)"  # Column name in the admin panel
+
+    # Sale_price
+    def formatted_sale_price(self, obj):
+        return f"{obj.sale_price:,.0f} Toman"  # Format with commas and add "Toman"
+    
+    formatted_sale_price.short_description = "Price (Toman)"  # Column name in the admin panel
+
+    # Place Holder Of price
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        field = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == "price" and "sale_price":
+            field.widget.attrs["placeholder"] = "قیمت به تومان"
+        return field
+
+
+# Banner
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    ordering = ['order']  # Orders by price in ascending order
+    list_display = ('title', 'image_preview', 'category', 'order', 'is_active',)
+    list_filter = ('order', 'is_active',)
+    search_fields = ('title', 'order',)
+    verbose_name = _("عکس ها-بنرها")  # Custom translation
 
     def image_preview(self, obj):
         if obj.image:
@@ -37,3 +80,5 @@ class ProductAdmin(admin.ModelAdmin):
         return "No Product Image"
     
 
+# Rating
+admin.site.register(Rating)

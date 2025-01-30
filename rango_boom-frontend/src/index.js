@@ -2,11 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { BrowserRouter as Router } from 'react-router-dom'; // اضافه کردن Router
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Router> {/* قرار دادن Router اطراف App */}
+      <App />
+    </Router>
   </React.StrictMode>
 );
 

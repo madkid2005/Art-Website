@@ -2,7 +2,19 @@ from django.db import models
 from apps.buyers.models import BuyerProfile
 from apps.store.models import Product
 
+class Cart(models.Model):
+    buyer = models.OneToOneField(BuyerProfile, on_delete=models.CASCADE, related_name='cart')
 
+    def __str__(self):
+        return f"Cart for {self.buyer.name}"
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} in {self.cart.buyer.name}'s cart"
 
 class Order(models.Model):
 
@@ -15,7 +27,13 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=20,
-        choices=[('Pending', 'Pending'), ('Accepted', 'Accepted'), ('Delivered', 'Delivered')],
+        choices=[
+            ('Pending', 'Pending'),
+            ('SellerConfirmed', 'Seller Confirmed'),
+            ('Ready', 'Ready'),
+            ('Shipped', 'Shipped'),
+            ('Delivered', 'Delivered')
+        ],
         default='Pending'
     )
 
@@ -25,3 +43,4 @@ class Order(models.Model):
 
     def get_buyer_name(self):
         return f"Order {self.id} by {self.buyer.name}"
+

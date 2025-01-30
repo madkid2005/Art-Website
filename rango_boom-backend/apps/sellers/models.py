@@ -15,6 +15,13 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, mobile_number, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+
+        # Check if is super user or not 
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(_('Superuser must have is_staff=True.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(_('Superuser must have is_superuser=True.'))
+        
         return self.create_user(mobile_number, password, **extra_fields)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -28,10 +35,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_seller = models.BooleanField(default=False)
     is_buyer = models.BooleanField(default=True)
 
+    # date_joined = models.DateTimeField(auto_now_add=True)
+
 
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'mobile_number'
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.mobile_number
@@ -59,4 +69,4 @@ class SellerProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.store_name
+        return f"Seller: {self.store_name} ({self.user.mobile_number})"

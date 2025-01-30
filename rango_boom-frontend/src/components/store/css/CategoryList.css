@@ -1,0 +1,30 @@
+.category-slide {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .circle-border {
+    width: 100px; /* اندازه تصویر و دایره */
+    height: 100px;
+    border: 3px solid orange; /* رنگ بوردر اولیه */
+    border-radius: 50%; /* دایره‌ای کردن بوردر */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border 0.3s ease, transform 0.3s ease; /* انیمیشن برای هاور */
+  }
+  
+  .circle-border img {
+    width: 80%; /* اندازه تصویر درون دایره */
+    height: 80%;
+    object-fit: cover; /* تناسب تصویر */
+    border-radius: 50%; /* دایره‌ای کردن تصویر */
+  }
+  
+  .circle-border:hover {
+    border-width: 5px; /* افزایش ضخامت بوردر هنگام هاور */
+    transform: scale(1.1); /* کمی بزرگ‌تر کردن دایره */
+  }
+  
