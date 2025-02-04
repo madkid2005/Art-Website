@@ -8,6 +8,30 @@ export default function ProductDetail() {
     const [loading, setLoading] = useState(true); // برای وضعیت بارگذاری
     const [error, setError] = useState(null); // برای ذخیره خطاها
 
+    const Access = localStorage.getItem("accessBuyer") || "";
+
+
+    const APICARD = () => {
+        if (!Access) {
+            console.error("No access token found");
+            return;
+          }
+        fetch("http://127.0.0.1:8000/api/orders/cart/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${Access}`,
+            },
+        })
+        .then(res =>res.json())
+        .then(data =>{
+            console.log('====================================');
+            console.log(data);
+            console.log('====================================');
+        })
+    }
+
+
     useEffect(() => {
         console.log('Fetching product with ID:', ID); // چاپ ID برای بررسی بیشتر
 
@@ -61,7 +85,7 @@ export default function ProductDetail() {
                             <p className="product-price">Price: ${product.price}</p>
                             <p className="product-price">Price: ${product.seller}</p>
                             <div className="product-actions">
-                                <button className="add-to-cart">Add to Cart</button>
+                                <button onClick={APICARD} className="add-to-cart">Add to Cart</button>
                             </div>
                         </div>
                     </div>

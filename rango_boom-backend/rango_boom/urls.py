@@ -9,6 +9,8 @@ urlpatterns = [
     path('api/store/', include('apps.store.urls')),
     path('api/sellers/', include('apps.sellers.urls')),
     path('api/buyers/', include('apps.buyers.urls')),
+    path('api/orders/', include('apps.orders.urls')),
+
 
 ]
 # Serve media files during development

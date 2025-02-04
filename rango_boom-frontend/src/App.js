@@ -15,6 +15,7 @@ import CenterBanner from './components/store/CenterBanner';
 import EndBanner from './components/store/EndBanner';
 import ProductDatail from './components/store/ProductDatail';
 import SellerDashboard from './components/Seller/SellerDashboard';
+import Test from './components/Test';
 
 export default function App() {
   const location = useLocation();
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/SingupSeller" element={<SingtuSeller />} />
         <Route path="/SingupBuyer" element={<SingupBuyer />} />
         <Route path="/SellerDashboard" element={<SellerDashboard />} />
+        <Route path="/test" element={<Test />} />
         <Route path="/products/category/:id" element={<ProductPage />} />
         <Route path="/products/productdatial/:ID/" element={<ProductDatail />} />
       </Routes>

@@ -18,15 +18,13 @@ export default function Dashboard() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/sellers/products/", {
-        method: "POST",
+      const response = await fetch("http://127.0.0.1:8000/api/buyers/profile/", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${Access}`,
         },
-        body: JSON.stringify({
         
-        }),
       });
 
       const data = await response.json();
@@ -37,7 +35,7 @@ export default function Dashboard() {
       console.error("Error sending product data:", error);
     }
   };
-
+  API()
   return (
     <div className='container-fluid'>
       <div className="row">

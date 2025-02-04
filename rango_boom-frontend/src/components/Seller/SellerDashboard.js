@@ -13,7 +13,7 @@ export default function SellerDashboard() {
   const [stock, setStock] = useState('');
   const [category_id, setCategory_id] = useState('');
 
-  const Access = localStorage.getItem("access") || "";
+  const Access = localStorage.getItem("accessBuyer") || "";
 
   const handlePanelChange = (panel) => {
     setActivePanel(panel);
