@@ -29,10 +29,10 @@ const ProductSlider = () => {
     }
     return (
         <div className="container-fluid m-2 rtl">
-            <h2 className="text-center text-dark font-weight-bold mb-4">
-                محصولات برتر
+            <h2 className="text-center text-dark font-weight-bold mb-3">
+                محصولات تخفیف خورده
             </h2>
-            <div className="border p-3 border-2 rounded-3">
+            <div className="border p-3 border-3 rounded-5">
 
                 <Swiper
                     slidesPerView={6}
@@ -52,11 +52,13 @@ const ProductSlider = () => {
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className="p-2 img-fluid w-100"
+                                        className="p-1 img-fluid w-100"
                                     />
-                                    {/* اطلاعات محصول */}
-                                    <div className="p-2">
-                                        <span className="product-title text-truncate mb-2">
+                                    
+                                </div>
+                                {/* اطلاعات محصول */}
+                                <div className="p-2">
+                                        <span className="product-title text-truncate mb-2 ">
                                             {product.name}
                                         </span>
                                         <div className="product-prices text-start">
@@ -74,7 +76,6 @@ const ProductSlider = () => {
                                         </div>
                                     </div>
 
-                                </div>
                             </SwiperSlide>
                         ))
                     ) : (

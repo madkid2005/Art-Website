@@ -4,6 +4,7 @@ from apps.store.models import Product
 
 class Cart(models.Model):
     buyer = models.OneToOneField(BuyerProfile, on_delete=models.CASCADE, related_name='cart')
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Cart for {self.buyer.name}"
@@ -38,7 +39,7 @@ class Order(models.Model):
     )
 
     def __str__(self):
-        return f"Order for {self.product.name} by {self.buyer_name} mobile : {self.buyer_phone}"
+        return f"Order for {self.product.name} by {self.buyer.name} mobile : {self.buyer.phone_number}"
 
 
     def get_buyer_name(self):

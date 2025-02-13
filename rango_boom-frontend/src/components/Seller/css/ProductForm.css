@@ -57,3 +57,35 @@
 .submit-btn:hover {
     background: #5a2bb5;
 }
+
+/* ProductForm.css */
+.container-fluid {
+    padding: 20px;
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .submit-btn {
+    background-color: #783dd5;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+  }
+  
+  .submit-btn:hover {
+    background-color: #5a2d91;
+  }
+  
+  .image-preview {
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 8px;
+  }
+  

@@ -68,6 +68,8 @@ const navigate = useNavigate("")
 
         localStorage.setItem("access",data.access)
         localStorage.setItem("refresh",data.refresh)
+        localStorage.setItem("seller_id",data.user.id)
+
       })
       .then(() => 
         navigate("../SellerDashboard")

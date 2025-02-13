@@ -4,10 +4,13 @@ from .models import Order, Cart, CartItem
 # Cart
 class CartItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
+    product_price = serializers.DecimalField(source="product.price", max_digits=10, decimal_places=3, read_only=True)
+    product_image = serializers.ImageField(source="product.image", read_only=True)
 
     class Meta:
         model = CartItem
-        fields = ['id', 'product', 'quantity']
+        fields = ['id', 'product', 'product_name', 'product_price', 'product_image', 'quantity']
+
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True)
@@ -18,8 +21,9 @@ class CartSerializer(serializers.ModelSerializer):
 
 # Order
 class OrderSerializer(serializers.ModelSerializer):
-    product_name = serializers.ReadOnlyField(source='product.name')
+    product_name = serializers.CharField(source='product.name', read_only=True)
     buyer_name = serializers.CharField(source='buyer.user.name', read_only=True)
+    buyer_phone = serializers.CharField(source='buyer.phone_number', read_only=True)  # Get phone_number from BuyerProfile
 
     class Meta:
         model = Order

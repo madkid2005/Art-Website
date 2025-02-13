@@ -21,13 +21,30 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class BuyerProfileSerializer(serializers.ModelSerializer):
+    user = CustomUserSerializer(read_only=True)
+
     class Meta:
         model = BuyerProfile
-        fields = ['id', 'name', 'address', 'email', 'created_at']
-
+        fields = ['id', 'user', 'name', 'address', 'email', 'phone_number', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']  # Prevents unwanted updates to user-related fields
 
 class OrderSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    buyer_name = serializers.CharField(source='buyer.user.name', read_only=True)
+    buyer_phone = serializers.CharField(source='buyer.phone_number', read_only=True)  # Get phone_number from BuyerProfile
+
     class Meta:
         model = Order
-        fields = ['id', 'product_name', 'status', 'created_at']
+        fields = [
+            'id',
+            'product_name',
+            'buyer_name',
+            'buyer_phone',
+            'quantity',
+            'total_price',
+            'address',
+            'status',
+            'created_at',
+        ]
+        read_only_fields = ['total_price', 'created_at']
 

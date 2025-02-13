@@ -19,10 +19,10 @@
 }
 
 .swiper-pagination-bullet {
-    background: #fff; /* رنگ نقاط زیر اسلایدر */
+    background: #ff0000; /* رنگ نقاط زیر اسلایدر */
     opacity: 0.7;
 }
 
 .swiper-pagination-bullet-active {
-    background: #007bff; /* رنگ نقطه فعال */
+    background: #ff0000; /* رنگ نقطه فعال */
 }

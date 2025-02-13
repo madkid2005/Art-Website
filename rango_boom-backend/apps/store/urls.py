@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProductViewSet, CategoryViewSet, BannerViewSet, ReviewViewSet
-
+from .views import ProductViewSet, CategoryViewSet, BannerViewSet, ReviewView, CheckPurchaseView
+from .upload_image import upload_product_image
 
 router = DefaultRouter()
 # products urls
@@ -11,10 +11,16 @@ router.register(r'categories', CategoryViewSet, basename='categories')
 # banners urls
 router.register(r'banners', BannerViewSet, basename='banners')
 # products urls
-router.register(r'products/(?P<product_id>\d+)/reviews', ReviewViewSet, basename='product-reviews')
+# router.register(r'products/(?P<product_id>\d+)/reviews', ReviewView, basename='product-reviews')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('upload-product-image/', upload_product_image, name='upload-product-image'),
+    path('products/<int:product_id>/reviews/', ReviewView.as_view(), name='product-reviews'),
+    path('check-purchase/<int:product_id>/', CheckPurchaseView.as_view(), name='check-purchase'),
+
+
+
 
 ]
 

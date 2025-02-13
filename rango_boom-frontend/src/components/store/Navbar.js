@@ -9,27 +9,36 @@ export default function Navbar() {
   const [showPanels, setShowPanels] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [childrenList, setChildrenList] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null); // ذخیره دسته‌بندی انتخاب‌شده
-  const navigate = useNavigate(); // ایجاد یک تابع برای هدایت به صفحه
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch categories
     axios
       .get("http://127.0.0.1:8000/api/store/categories/")
-      .then((response) => {
-        setCategories(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
+      .then((response) => setCategories(response.data))
+      .catch((error) => console.error("Error fetching categories:", error));
+
+    // Fetch cart items if auth token is present
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      axios
+        .get("http://127.0.0.1:8000/api/orders/cart/", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => setCartItems(response.data.items))
+        .catch((error) => console.error("Error fetching cart items:", error));
+    }
   }, []);
 
-  const handleCategoryClick = () => {
-    setShowPanels((prevState) => !prevState); // Toggle پنل‌ها
+  const toggleCategoryPanel = () => {
+    setShowPanels((prev) => !prev);
     if (showPanels) {
       setHoveredCategory(null);
       setChildrenList([]);
-      setSelectedCategory(categories[0]); // انتخاب پیش‌فرض اولین دسته‌بندی
+      setSelectedCategory(categories[0]);
     }
   };
 
@@ -38,19 +47,10 @@ export default function Navbar() {
     setChildrenList(category.children || []);
   };
 
-
-  const SendPageSeller = ()=>{
-    navigate("/SingupSeller")
-  }
-
   const handleMouseLeave = () => {
     setHoveredCategory(null);
-    setShowPanels(false)
+    setShowPanels(false);
     setChildrenList([]);
-  };
-
-  const changepage = () => {
-    navigate("/SingupBuyer");
   };
 
   return (
@@ -59,54 +59,51 @@ export default function Navbar() {
         {/* دسته‌بندی */}
         <div className="col-md-4 mt-3 position-relative d-flex">
           <button
-            className="btn d-flex align-items-center btn"
-            onClick={handleCategoryClick}
-            style={{
-              transition: "all 0.3s ease-in-out",
-              borderRadius: "8px",
-            }}
+            className="btn d-flex align-items-center"
+            onClick={toggleCategoryPanel}
+            style={{ transition: "all 0.3s ease-in-out", borderRadius: "8px" }}
           >
             <i className="bi bi-grid-fill fw-bold fs-4 text-primary"></i>
-            <span className=" mx-2">دسته بندی</span>
+            <span className="mx-2">دسته بندی</span>
           </button>
-          <small onClick={SendPageSeller}>
-
-          <p className="mt-3">فروشنده شوید</p>
+          <small onClick={() => navigate("/SingupSeller")}>
+            <p className="mt-3">فروشنده شوید</p>
           </small>
         </div>
 
         {/* لوگو */}
         <div className="col-md-4 text-center">
-          <img
-            className="mt-3"
-            style={{ width: "300px" }}
-            src={logo}
-            alt="Logo"
-          />
+          <img className="mt-3" style={{ width: "300px" }} src={logo} alt="Logo" />
         </div>
 
         {/* آیکون‌ها */}
         <div className="col-md-4 mt-3">
           <div className="text-start">
-            <button onClick={changepage} className="btn mx-2">
+            <button onClick={() => navigate("/SingupBuyer")} className="btn mx-2">
               <i className="bi bi-person-fill-gear fw-bold fs-4 text-secondary"></i>
             </button>
-            <button className="btn mx-2">
+            <button className="btn mx-2" onClick={() => navigate("/cart")}>
               <i className="bi bi-bag-heart fw-bold fs-4 text-danger"></i>
+              {cartItems.length > 0 && <span className="badge badge-light">{cartItems.length}</span>}
+            </button>
+            <button
+              onClick={() => (cartItems.length > 0 ? navigate("/place-order") : alert("Your cart is empty."))}
+              className="btn mx-2"
+            >
+              <i className="bi bi-cart-check fw-bold fs-4 text-success"></i>
             </button>
           </div>
         </div>
       </div>
 
       {/* پنل دسته‌بندی و زیرمجموعه‌ها */}
-      {showPanels  && (
+      {showPanels && (
         <div
           className="row z-3 position-fixed shadow"
-          onMouseLeave={handleMouseLeave} // رویداد خروج موس برای کل پنل
+          onMouseLeave={handleMouseLeave}
           style={{
-            position: "relative",
-            backdropFilter: "blur(10px)", // اضافه کردن افکت بلور
-            height: "100vh", // برای پوشش دادن تمام صفحه
+            backdropFilter: "blur(10px)",
+            height: "100vh",
           }}
         >
           {/* پنل دسته‌بندی‌ها */}
@@ -118,9 +115,8 @@ export default function Navbar() {
               border: "1px solid #ddd",
               borderRadius: "8px",
               backgroundColor: "#f1f1f1",
-              paddin: "10px",
+              padding: "10px",
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-              transition: "all 0.3s ease",
             }}
           >
             {categories.map((category) => (
@@ -128,22 +124,19 @@ export default function Navbar() {
                 key={category.id}
                 className="category rightanim"
                 onMouseEnter={() => handleMouseEnter(category)}
+                onClick={() => setSelectedCategory(category)}
                 style={{
                   padding: "10px",
                   borderBottom: "1px solid #ddd",
                   cursor: "pointer",
                   borderRadius: "5px",
                   transition: "background-color 0.3s ease",
-                  backgroundColor:
-                    hoveredCategory === category.id || selectedCategory?.id === category.id
-                      ? "#fff"
-                      : "transparent",
+                  backgroundColor: hoveredCategory === category.id ? "#fff" : "transparent",
                 }}
-                onClick={() => setSelectedCategory(category)} // انتخاب دسته‌بندی
               >
                 <div className="d-flex">
                   <div className="col-1">
-                    <i className=" mx-2 text-primary ">
+                    <i className="mx-2 text-primary">
                       <img className="img-fluid" src={category.icon} alt="" />
                     </i>
                   </div>
@@ -154,7 +147,18 @@ export default function Navbar() {
           </div>
 
           {/* پنل زیرمجموعه‌ها */}
-          <div className="col-7" style={{ height: "400px", overflowY: "auto", border: "1px solid #ddd", backgroundColor: "white", borderRadius: "12px", boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", padding: "10px" }}>
+          <div
+            className="col-7"
+            style={{
+              height: "400px",
+              overflowY: "auto",
+              border: "1px solid #ddd",
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              padding: "10px",
+            }}
+          >
             <div className="row g-2">
               {childrenList.length > 0 ? (
                 childrenList.map((child) => (

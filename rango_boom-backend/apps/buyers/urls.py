@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GenerateBuyerOTP, BuyerLogin, BuyerProfileView, BuyerOrderListView, OrderDetailView
+from .views import GenerateBuyerOTP, BuyerLogin, BuyerProfileView, BuyerOrderListView, OrderDetailView, CheckPurchaseView
 
 urlpatterns = [
     path('otp/', GenerateBuyerOTP.as_view(), name='generate_otp'),
@@ -9,5 +9,5 @@ urlpatterns = [
     
     path('orders/', BuyerOrderListView.as_view(), name='buyer_orders'),
     path('orders/<int:pk>/', OrderDetailView.as_view(), name='buyer-order-detail'),
-    # path('cart/', CartView.as_view(), name='buyer-cart'),
+    path('check-purchase/<int:product_id>/', CheckPurchaseView.as_view(), name='check-purchase'),
 ]

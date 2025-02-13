@@ -1,0 +1,74 @@
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.product-image {
+    object-fit: cover;
+    height: 200px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+.product-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 150px; /* Set a fixed height for the product info section */
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-prices h6 {
+    font-size: 18px;
+    color: #2e2e2e;
+    font-weight: bold;
+}
+
+.product-card .product-title,
+.product-card .product-prices {
+    margin-bottom: 8px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: #007bff;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.swiper-pagination-bullet {
+    background-color: #007bff;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .product-info {
+        height: 130px; /* Adjust height for smaller screens */
+    }
+}

@@ -1,4 +1,9 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product, Category, Banner, Review
 from .serializers import ProductSerializer, CategorySerializer, BannerSerializer, ReviewSerializer
@@ -73,24 +78,44 @@ class BannerViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 # Comment view - load comments
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
 
-    def get_queryset(self):
-        product_id = self.kwargs.get('product_id')
-        return Review.objects.filter(product_id=product_id)
+    def get(self, request, product_id):
+        """Fetch all reviews for a product"""
+        product = get_object_or_404(Product, id=product_id)
+        reviews = product.reviews.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def perform_create(self, serializer):
-        product_id = self.kwargs.get('product_id')
-        product = Product.objects.get(id=product_id)
+    def post(self, request, product_id):
+        """Allow a buyer to add a review for a product"""
+        product = get_object_or_404(Product, id=product_id)
+        buyer = request.user.buyer_profile
 
-        # Check if the user has bought the product
-        if not Order.objects.filter(product=product, buyer=self.request.user).exists():
-            raise PermissionDenied("You can only review products you have purchased.")
-        
-        # Save the review with the associated product and buyer
-        serializer.save(product=product, buyer=self.request.user)
+        # if not Order.objects.filter(buyer=buyer, product=product, status='Delivered').exists():
+        #     return Response({"detail": "You can only review products you've purchased."}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {
+            'product': product.id,
+            'buyer': buyer.id,
+            'rating': request.data.get('rating'),
+            'comment': request.data.get('comment')
+        }
+        serializer = ReviewSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CheckPurchaseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, product_id):
+        buyer = request.user.buyer_profile
+        product = get_object_or_404(Product, id=product_id)
+
+        has_purchased = Order.objects.filter(buyer=buyer, product=product, status='Delivered').exists()
+
+        return Response({"purchased": has_purchased})

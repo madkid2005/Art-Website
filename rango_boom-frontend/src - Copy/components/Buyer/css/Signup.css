@@ -1,0 +1,23 @@
+input.focusborderinput {
+    border: none; /* حذف بورد کلی */
+    border-bottom: 2px solid #ab3301; /* بورد پایین */
+    transition: border-color 0.3s ease; /* افکت تغییر رنگ بورد */
+  }
+  
+  input.focusborderinput:focus {
+    border-bottom: 2px solid #fd5109; /* تغییر رنگ بورد هنگام فوکوس */
+    outline: none; /* حذف outline پیش‌فرض */
+  }
+  .btnrgb {
+    background: linear-gradient(270deg, #fb4f09, #ffd1b9);
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .bg-imgseller{
+    background-image: url(../../../assets/images/ggg.jpg);
+    background-size: cover;
+  }

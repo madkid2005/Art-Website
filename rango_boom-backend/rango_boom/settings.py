@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from django.utils.translation import gettext_lazy as _
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-!4-aziegqq)3j$l&+3ayomdq0!tp=f-sx2q-rel8h#0#ky0)nm'
@@ -24,6 +25,7 @@ INSTALLED_APPS = [
     # rest_framework
     'rest_framework',
     'rest_framework_simplejwt',
+    "rest_framework_simplejwt.token_blacklist",  # Enables token blacklisting
     'rest_framework.authtoken',
 
     # Dependencies
@@ -115,6 +117,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
+    # "DEFAULT_PERMISSION_CLASSES": (
+    #     "rest_framework.permissions.IsAuthenticated",
+    # ),
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -144,3 +150,24 @@ LANGUAGES = [
     ('en', _('English')),
     ('fa', _('Persian')),
 ]
+
+
+
+# JWT
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # Access token valid for 7 days
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # Refresh token valid for 30 days
+    
+    "ROTATE_REFRESH_TOKENS": True,  # Generates a new refresh token when refreshed
+    "BLACKLIST_AFTER_ROTATION": True,  # Blacklists old refresh tokens
+    "ALGORITHM": "HS256",  # Secure hashing algorithm
+    "SIGNING_KEY": SECRET_KEY,  # Uses Django's SECRET_KEY for signing
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Expecting "Bearer <token>" in requests
+}
+
+# Cors headers 
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins (for testing)
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "https://yourfrontend.com",
+# ]

@@ -1,0 +1,35 @@
+
+
+h4 {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* افکت هاور برای لینک‌ها */
+.hover-effect {
+    transition: color 0.3s ease-in-out;
+}
+
+.hover-effect:hover {
+    color: #ffcc00;
+}
+
+/* استایل آیکون‌های اجتماعی */
+.social-icon {
+    font-size: 24px;
+    color: #ffffff;
+    transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+    text-decoration: none;
+}
+
+/* اینستاگرام */
+.instagram:hover {
+    color: #e4405f;
+    transform: scale(1.2);
+}
+
+/* واتساپ */
+.whatsapp:hover {
+    color: #25d366;
+    transform: scale(1.2);
+}

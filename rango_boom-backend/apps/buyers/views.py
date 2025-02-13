@@ -9,7 +9,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework import status
 # Files
 from .models import BuyerProfile, CustomUser
 from .serializers import BuyerProfileSerializer, CustomUserSerializer, OrderSerializer
@@ -31,7 +31,7 @@ class GenerateBuyerOTP(APIView):
             defaults={"otp": otp}
         )
         print(f"OTP for {mobile_number}: {otp}")  # For testing purposes
-        return Response({"message": "OTP sent successfully"})
+        return Response({"message": "OTP sent successfully"}, status=HTTP_200_OK)
 
 # Verify OTP and Login/Register
 class BuyerLogin(APIView):
@@ -53,13 +53,19 @@ class BuyerLogin(APIView):
             user.set_password(None)
             user.save()
 
-        # Generate tokens
+        # Ensure buyer profile is created
+        BuyerProfile.objects.get_or_create(user=user, defaults={"name": "New Buyer"})
+
+        # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
-        return Response({
+        response_data = {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
-            "user": CustomUserSerializer(user).data
-        })
+            "user": CustomUserSerializer(user).data,
+        }
+        print(f"✅ Login Successful for {mobile_number}: {response_data}")
+
+        return Response(response_data, status=HTTP_200_OK)
 
 # Buyer Dashboard: View and Edit Profile
 class BuyerProfileView(RetrieveUpdateAPIView):
@@ -67,7 +73,8 @@ class BuyerProfileView(RetrieveUpdateAPIView):
     serializer_class = BuyerProfileSerializer
 
     def get_object(self):
-        return self.request.user.buyer_profile
+        return get_object_or_404(BuyerProfile, user=self.request.user)
+
 
 # View Orders
 class BuyerOrderListView(ListAPIView):
@@ -85,3 +92,12 @@ class OrderDetailView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Order.objects.filter(buyer=self.request.user.buyer_profile)
 
+class CheckPurchaseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, product_id):
+        """Check if the authenticated buyer has purchased a product."""
+
+        user = request.user # Get the authenticated user
+        purchased = Order.objects.filter(order__buyer=user, product_id=product_id).exists()
+        return Response({"purchased": purchased})

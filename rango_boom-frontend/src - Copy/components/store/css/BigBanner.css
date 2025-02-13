@@ -1,0 +1,28 @@
+.swiper-button-next,
+.swiper-button-prev {
+    color: #fff; /* رنگ دکمه‌ها */
+    background: rgba(0, 0, 0, 0.5); /* پس‌زمینه نیمه‌شفاف */
+    border-radius: 50%; /* گرد کردن دکمه‌ها */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-button-next {
+    right: 10px; /* فاصله از سمت راست */
+}
+
+.swiper-button-prev {
+    left: 10px; /* فاصله از سمت چپ */
+}
+
+.swiper-pagination-bullet {
+    background: #ff0000; /* رنگ نقاط زیر اسلایدر */
+    opacity: 0.7;
+}
+
+.swiper-pagination-bullet-active {
+    background: #ff0000; /* رنگ نقطه فعال */
+}

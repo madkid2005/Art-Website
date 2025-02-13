@@ -2,20 +2,35 @@ import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Navbar from './components/store/Navbar';
-import Dashboard from './components/Buyer/Dashboard';
-import SingtuSeller from './components/Seller/SingupSeller';
-import SingupBuyer from './components/Buyer/SingupBuyer';
-import Productbestratings from './components/store/Product_bestratings';
-import Productlatest from './components/store/Product_latest';
-import Productonsale from './components/store/Product_onSale';
 import CategoryList from './components/store/CategoryList';
-import ProductPage from './components/store/ProductPage';
+
+// Banner
 import BigBanner from './components/store/BigBanner';
 import CenterBanner from './components/store/CenterBanner';
 import EndBanner from './components/store/EndBanner';
+
+// Products
+import Productbestratings from './components/store/Product_bestratings';
+import Productlatest from './components/store/Product_latest';
+import Productonsale from './components/store/Product_onSale';
+import ProductPage from './components/store/ProductPage';
 import ProductDatail from './components/store/ProductDatail';
+
+// Seller
+import SingtuSeller from './components/Seller/SingupSeller';
 import SellerDashboard from './components/Seller/SellerDashboard';
-import Test from './components/Test';
+
+// Buyer
+import SingupBuyer from './components/Buyer/SingupBuyer';
+import BuyerProfile from './components/Buyer/BuyerProfile';
+import BuyerOrders from './components/Buyer/BuyerOrders';
+
+// Orders 
+import Cart from "./components/Cart-And-Orders/Cart";
+import Checkout from "./components/Cart-And-Orders/Checkout";
+import OrderStatus from "./components/Cart-And-Orders/OrderStatus";
+import Dashboard from './components/Buyer/Dashboard';
+
 
 export default function App() {
   const location = useLocation();
@@ -27,19 +42,49 @@ export default function App() {
     <div style={{ direction: 'rtl' }}>
       {showHeader && <Navbar />}
       <Routes>
+
+        {/* Products List Page */}
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/SingupSeller" element={<SingtuSeller />} />
-        <Route path="/SingupBuyer" element={<SingupBuyer />} />
-        <Route path="/SellerDashboard" element={<SellerDashboard />} />
-        <Route path="/test" element={<Test />} />
+
+        {/* Category */}
         <Route path="/products/category/:id" element={<ProductPage />} />
+
+        {/* Product detail page */}
         <Route path="/products/productdatial/:ID/" element={<ProductDatail />} />
+
+        {/* Seller signup */}
+        <Route path="/SingupSeller" element={<SingtuSeller />} />
+
+        {/* Buyer signup */}
+        <Route path="/SingupBuyer" element={<SingupBuyer />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
+
+
+        {/* Seller Dashboard */}
+        <Route path="/SellerDashboard" element={<SellerDashboard />} />
+
+        {/* Buyer Dashborad */}
+        <Route path="/BuyerProfile" element={<BuyerProfile />} />
+
+
+        <Route path="/buyer-orders" element={<BuyerOrders />} />
+
+        {/* cart iteams */}
+        <Route path="/cart" element={<Cart />} />
+
+        {/* checkout : after cart and click on checkout (PlaceOrder) */}
+        <Route path="/checkout" element={<Checkout />} />
+
+        {/* orders status  */}
+        <Route path="/orders" element={<OrderStatus />} />
+
       </Routes>
     </div>
   );
 }
 
+// Order of main page parts 
 function Home() {
   return (
     <div>

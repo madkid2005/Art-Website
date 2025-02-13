@@ -1,0 +1,98 @@
+.rotatedicon {
+    transform: rotate(90deg);
+    transition: transform 1s ease-in-out; /* برای انیمیشن نرم */
+  }
+
+
+  .border-bottom-anim {
+    display: grid;
+    position: relative;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+    overflow: hidden;
+  }
+  
+  .border-bottom-anim::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 2px; /* ارتفاع بردر */
+    background-color: #007bff; /* رنگ بردر */
+    transition: width 0.4s ease, right 0.4s ease;
+  }
+  
+  .border-bottom-anim:hover::after {
+    width: 100%; /* عرض کامل */
+    right: 0; /* حرکت به سمت چپ */
+  }
+  .hover-box {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    z-index: 10;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sub-hover-box {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 5px;
+    z-index: 20;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .category {
+    position: relative; /* موقعیت‌دهی والد */
+  }
+  
+  .children {
+    position: absolute;
+    top: 0; /* باز شدن از بالای والد */
+    right: 50%; /* باز شدن به سمت راست */
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    max-height: 200px; /* حداکثر ارتفاع */
+    overflow-y: auto; /* اسکرول عمودی */
+    z-index: 1000;
+    width: 200px; /* عرض ثابت */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* سایه برای زیبایی */
+  }
+  
+  .children .child {
+    margin-bottom: 5px; /* فاصله بین آیتم‌ها */
+    cursor: pointer; /* نشانگر کلیک */
+  }
+  
+  .children .child:hover {
+    background-color: #f0f0f0; /* رنگ پس‌زمینه در حالت هاور */
+  }
+  .rightanim:hover {
+    transform: translateX(10px);
+    transition: transform 0.8s ease-in-out; /* حرکت نرم و طولانی‌تر */
+  }
+  @keyframes colorChange {
+    0% { color: rgb(255, 0, 0); }   /* قرمز */
+    25% { color: rgb(0, 255, 0); }  /* سبز */
+    50% { color: rgb(0, 0, 255); }  /* آبی */
+    75% { color: rgb(255, 255, 0); } /* زرد */
+    100% { color: rgb(255, 0, 0); } /* بازگشت به قرمز */
+  }
+  
+  .icon-hover {
+    transition: transform 0.5s ease; /* فقط چرخش (اگر لازم شد) */
+  }
+  
+  .icon-hover:hover {
+    animation: colorChange 1s infinite linear;  /* تغییر رنگ سریع */
+  }
+  

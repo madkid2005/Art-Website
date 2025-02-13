@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Count
 import random
@@ -130,42 +131,47 @@ class ProductListCreateView(ListCreateAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
+        """لیست محصولات فقط برای فروشنده تأیید شده نمایش داده می‌شود"""
         seller_profile = self.request.user.seller_profile
 
-         # check approved 
         if not seller_profile.is_approved:
-            raise PermissionDenied("Your account is not approved yet.")
-        
+            raise PermissionDenied("حساب کاربری شما هنوز تأیید نشده است.")
+
         return Product.objects.filter(seller=seller_profile)
 
-    def perform_create(self, serializer):
-        seller_profile = self.request.user.seller_profile
+    
+def perform_create(self, serializer):
+    """ایجاد محصول جدید با بررسی دسته‌بندی و تأیید فروشنده"""
+    seller_profile = self.request.user.seller_profile
 
-        # check approved 
-        if not seller_profile.is_approved:
-            raise PermissionDenied("Your account is not approved yet.")
-        
-        # Ensure category is provided
-        category = self.request.data.get("category")
-        if not category:
-            return Response({"error": "Category is required"}, status=status.HTTP_400_BAD_REQUEST)
+    # بررسی تأیید فروشنده
+    if not seller_profile.is_approved:
+        raise PermissionDenied("حساب کاربری شما هنوز تأیید نشده است.")
 
-        # serializer.save(seller=seller_profile)
+    # بررسی ارسال دسته‌بندی
+    category_id = self.request.data.get("category")
+    if not category_id:
+        raise ValidationError({"category": "انتخاب دسته‌بندی الزامی است."})  # تغییر داده شد
 
-        # Save product instance with the seller
-        product = serializer.save(seller=seller_profile)
+    # بررسی اعتبار دسته‌بندی
+    category = Category.objects.filter(id=category_id).first()
+    if not category:
+        raise ValidationError({"category": "دسته‌بندی نامعتبر است."})  # تغییر داده شد
 
-        # If you want to set the category explicitly, ensure it's done properly here
-        category_id = self.request.data.get("category_id")
-        if category_id:
-            product.category = Category.objects.get(id=category_id)
-            product.save()
+    # Handle custom features
+    custom_features = self.request.data.get('custom_features', [])
+    if len(custom_features) > 6:
+        raise ValidationError({"custom_features": "مجموع ویژگی‌ها نمی‌تواند بیشتر از 6 باشد."})
 
+    # ایجاد محصول با فروشنده و دسته‌بندی
+    serializer.save(seller=seller_profile, category=category)
+    
     def get_serializer_context(self):
-        # Ensure request context is passed to the serializer
+        """افزودن درخواست به کانتکست سریالایزر"""
         context = super().get_serializer_context()
-        context['request'] = self.request  # Add the request object to context
+        context['request'] = self.request
         return context
+
     
 # seller Products detail < edit : update or delete >
 class ProductDetailView(RetrieveUpdateDestroyAPIView):

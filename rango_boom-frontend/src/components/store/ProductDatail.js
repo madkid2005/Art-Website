@@ -1,94 +1,282 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import './css/ProductDetail.css'; // اضافه کردن فایل CSS برای استایل‌ها
+import './css/ProductDetail.css';
+import { FaStar } from 'react-icons/fa';
 
 export default function ProductDetail() {
     const { ID } = useParams();
-    const [product, setProduct] = useState(null); // برای ذخیره داده‌ها
-    const [loading, setLoading] = useState(true); // برای وضعیت بارگذاری
-    const [error, setError] = useState(null); // برای ذخیره خطاها
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [addingToCart, setAddingToCart] = useState(false);
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState("");
+    const [message, setMessage] = useState("");
+    const [ShowComments, setShowComments] = useState([]);
+    const [hover, setHover] = useState(null);
+    const words = product?.description ? product.description.split(" ") : [];
 
+    const [showFull, setShowFull] = useState(false); // کنترل نمایش متن کامل
     const Access = localStorage.getItem("accessBuyer") || "";
 
-
-    const APICARD = () => {
+    const addToCart = () => {
         if (!Access) {
-            console.error("No access token found");
+            alert("Please log in to add items to the cart.");
             return;
-          }
+        }
+
+        setAddingToCart(true);
+
         fetch("http://127.0.0.1:8000/api/orders/cart/", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": `Bearer ${Access}`,
+                "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+                product_id: product.id,
+                quantity: 1,
+            }),
         })
-        .then(res =>res.json())
-        .then(data =>{
-            console.log('====================================');
-            console.log(data);
-            console.log('====================================');
-        })
-    }
-
+            .then(res => res.json())
+            .then(cartData => {
+                setAddingToCart(false);
+                if (cartData.detail) {
+                    alert(cartData.detail);
+                } else {
+                    alert('Product added to cart successfully!');
+                }
+            })
+            .catch(error => {
+                console.error("Error adding to cart:", error);
+                setAddingToCart(false);
+                alert('Failed to add product to cart.');
+            });
+    };
 
     useEffect(() => {
-        console.log('Fetching product with ID:', ID); // چاپ ID برای بررسی بیشتر
+            // GET COMMENT
 
+            fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${Access}`,
+                    "Content-Type": "application/json",
+                },
+            })
+                .then(res => res.json())
+                .then(data => {
+                    setShowComments(data);
+                })
+                .catch(error => console.error("Error fetching reviews:", error));
+    
         fetch(`http://127.0.0.1:8000/api/store/products/${ID}/`)
             .then(res => res.json())
             .then(data => {
-                console.log('Product data:', data); // چاپ داده‌های دریافتی از API
-
-                if (data.detail && data.detail === 'Not found.') {
-                    setError('Product not found.'); // نمایش پیام خطا در صورت عدم یافتن محصول
+                if (data.detail) {
+                    setError('Product not found.');
                 } else {
-                    setProduct(data); // ذخیره داده‌ها در state
+                    setProduct(data);
                 }
-                setLoading(false); // تغییر وضعیت بارگذاری
+                setLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching product:', error);
-                setError('Error fetching product.'); // نمایش پیام خطا در صورت بروز خطا
+                setError('Error fetching product.');
                 setLoading(false);
             });
-    }, [ID]);
 
-    if (loading) {
-        return <div className="loading">Loading...</div>;
-    }
+        // Fetch comments after product is loaded
+        fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
+            headers: {
+                Authorization: `Bearer ${Access}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(res => res.json())
+            .then(data => console(data))
+            .catch(error => console.error('Error fetching reviews:', error));
+    }, [ID, Access]);
 
-    if (error) {
-        return <div className="error">{error}</div>; // نمایش پیام خطا در صورت بروز مشکل
-    }
+    if (loading) return <div className="loading">Loading...</div>;
+    if (error) return <div className="error">{error}</div>;
 
-    if (!product) {
-        return <div className="not-found">Product not found.</div>; // در صورتی که محصول پیدا نشد
-    }
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        if (rating === 0) {
+            setMessage("لطفاً امتیاز خود را انتخاب کنید.");
+            return;
+        }
+        handleSubmit(e);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!Access) {
+            setMessage("لطفاً ابتدا وارد حساب کاربری خود شوید.");
+            return;
+        }
+
+        const reviewData = {
+            rating,
+            comment,
+            product: ID,
+            buyer: "ss", // in a real application, replace with logged-in user id
+        };
+
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${Access}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(reviewData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "مشکلی در ارسال نظر وجود دارد");
+            }
+
+            setMessage("نظر شما با موفقیت ثبت شد!");
+            setRating(5);
+            setComment("");
+
+            // Refresh comments after submission
+            setShowComments(prevComments => [...prevComments, data]);
+        } catch (error) {
+            console.error("Error:", error);
+            setMessage("خطایی رخ داد، لطفاً دوباره امتحان کنید.");
+        }
+    };
+    
 
     return (
-        <div className="container">
-            <div className="row ">
-                <div className="col-md-12 justify-content-center  mt-2 shadow rounded-3 d-flex">
-
-                    <div className="col-md-6 text-center">
-
-                        <div className="text-center col-md-6">
-                            <img src={product.image} className='w-100' alt={product.name} />
+        <div className="container mt-5">
+            <div className="row">
+                <div className="col-md-3">
+                    <img src={product.image} className="img-fluid rounded-3" alt={product.name} />
+                </div>
+                <div className="col-md-5">
+                    <div className="product-info">
+                        <h5>{product.name}</h5>
+                        <div className="row mt-5">
+                            {Object.entries(product.custom_features || {}).map(([key, value], index) => (
+                                <div
+                                    className="col-md-4 mb-1 rounded-3 gap-2 text-center p-3 rounded"
+                                    key={index}
+                                    style={{
+                                        backgroundColor: "#f6f6f6",
+                                        border: "1px solid #ddd",
+                                        borderRadius: "8px",
+                                    }}
+                                >
+                                    <strong>{key}</strong>: {value}
+                                </div>
+                            ))}
                         </div>
                     </div>
-                    <div className="col-md-6">
+                </div>
+                <div className="col-md-3 rounded-3 border" style={{ backgroundColor: "#f6f6f6" }}>
+                    <span className='fw-bold'>
+                        <br />
+                        <span><i className="bi bi-shop fs-4 text-success p-2"></i></span>
+                        فروشنده
+                    </span>
+                    <br />
+                    <strong className='me-5'>{product.seller_store_name}</strong>
+                    <br />
+                    <hr />
+                    <p className="text-start mt-3">
+                        <span className='fw-bold'>
+                            {product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </span>
+                        <span className='font-Homa mx-2'>تومان</span>
+                    </p>
+                    <div className="text-center">
+                        <small className="text-danger fw-bold">تعداد موجودی در انبار {product.stock}</small>
+                    </div>
+                    <div className="product-actions">
+                        <button
+                            onClick={addToCart}
+                            className="btnrgb border btn-lg w-100"
+                            disabled={addingToCart}
+                        >
+                            {addingToCart ? 'Adding to Cart...' : 'اضافه کردن به سبد خرید'}
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                        <div className="product-info">
-                            <h1 className="product-title">{product.name}</h1>
-                            <p className="product-description">{product.description}</p>
-                            <p className="product-price">Price: ${product.price}</p>
-                            <p className="product-price">Price: ${product.seller}</p>
-                            <div className="product-actions">
-                                <button onClick={APICARD} className="add-to-cart">Add to Cart</button>
+            <div className="text-center">
+                <h4>توضیحات:</h4>
+                <p className="product-description">
+                    {showFull ? product.description : words.slice(0, 30).join(" ") + "..." }
+                </p>
+                {!showFull && words.length > 30 && (
+                    <button
+                        className="mt-2 px-3 py-1 btn "
+                        onClick={() => setShowFull(true)}
+                    >
+                        <i className="bi bi-arrow-bar-down fs-4"></i>
+                    </button>
+                )}
+            </div>
+
+            <div className="row mt-4">
+                <div className="col-md-3 col-sm-12">
+                    <div className="border rounded-4">
+                        <div className="p-3">
+                            <h5 className='mt-2'>دیدگاه کاربران</h5>
+                            {message && <p className="text-info">{message}</p>}
+                            <form onSubmit={handleFormSubmit} className=''>
+                                <div className="d-flex">
+                                    <span className='mt-3 px-2'>امتیاز:</span>
+                                    <div className="star-rating">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <FaStar
+                                                key={star}
+                                                size={30}
+                                                style={{ cursor: "pointer" }}
+                                                color={star <= (hover || rating) ? "#FFD700" : "#ccc"}
+                                                onClick={() => setRating(star)}
+                                                onMouseEnter={() => setHover(star)}
+                                                onMouseLeave={() => setHover(null)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <label className='mt-2'>نظر شما:</label>
+                                <input
+                                    className="review-input"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}
+                                    required
+                                />
+                                <button className="review-btn" type="submit">ارسال نظر</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-sm-12 col-md-8">
+                    {ShowComments.map((ShowComment, index) => (
+                        <div key={index} className="comment-item">
+                            <div className="stars">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <i
+                                        key={star}
+                                        className={`bi bi-star${star <= ShowComment.rating ? '-fill' : ''} fs-4 text-warning`}
+                                    ></i>
+                                ))}
                             </div>
+                            <p className="comment-text">{ShowComment.comment}</p>
+                            <p className="comment-user">By {ShowComment.buyer}</p>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>

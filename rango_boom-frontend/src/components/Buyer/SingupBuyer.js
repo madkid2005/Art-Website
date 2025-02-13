@@ -57,25 +57,31 @@ const navigate = useNavigate("")
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ otp: otpCode, mobile_number: number }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+      .then((response) => response.json().then((data) => ({ status: response.status, body: data })))
+      .then(({ status, body }) => {
+        if (status !== 200) {
+          throw new Error(body.error || "OTP verification failed");
         }
-        return response.json();
-        
+  
+        console.log("✅ Login Response:", body);
+  
+        // Check if localStorage is available
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem("accessBuyer", body.access);
+          localStorage.setItem("refreshBuyer", body.refresh);
+          alert("✅ ورود با موفقیت انجام شد!");
+          navigate("../BuyerProfile");
+        } else {
+          console.error("❌ localStorage is not available in this browser.");
+          alert("❌ ذخیره اطلاعات ورود امکان‌پذیر نیست!");
+        }
       })
-      .then(data =>{
-        console.log('====================================');
-        console.log(data);
-        console.log('====================================');
-        
-        localStorage.setItem("accessBuyer",data.access)
-        localStorage.setItem("refreshBuyer",data.refresh)
-        navigate("../Dashboard")
-      })
-      .then(() => alert("کد تأیید با موفقیت ارسال شد!"))
-      .catch(() => alert("خطا در تأیید کد!"));
+      .catch((error) => {
+        console.error("❌ OTP Verification Error:", error.message);
+        alert(error.message);
+      });
   };
+  
 
   return (
     <div className="container d-flex align-items-center justify-content-center" style={{ height: "100vh", direction: "rtl" }}>

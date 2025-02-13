@@ -27,13 +27,14 @@ class CartView(APIView):
         product_id = request.data.get('product_id')
         quantity = request.data.get('quantity', 1)
 
+        # Retrieve or create the cart for the authenticated user
         cart, created = Cart.objects.get_or_create(buyer=request.user.buyer_profile)
         product = get_object_or_404(Product, id=product_id)
 
+        # Create or update the cart item (CartItem is related to Cart)
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        if not created:
-            cart_item.quantity += quantity
-        cart_item.save()
+        cart_item.quantity += quantity  # Increment the quantity of the existing cart item
+        cart_item.save()        
 
         return Response({"message": "Product added to cart."}, status=status.HTTP_201_CREATED)
 
@@ -43,10 +44,15 @@ class CartView(APIView):
         quantity = request.data.get('quantity')
 
         cart_item = get_object_or_404(CartItem, id=cart_item_id, cart__buyer=request.user.buyer_profile)
-        cart_item.quantity = quantity
-        cart_item.save()
 
-        return Response({"message": "Cart item updated."}, status=status.HTTP_200_OK)
+        if quantity > 0:
+            cart_item.quantity = quantity
+            cart_item.save()
+            return Response({"message": "Cart item updated."}, status=status.HTTP_200_OK)
+        else:
+            cart_item.delete()  # Remove the item if quantity is 0
+            return Response({"message": "Cart item removed."}, status=status.HTTP_204_NO_CONTENT)
+
 
     def delete(self, request):
         """Remove an item from the cart."""
@@ -70,13 +76,6 @@ class PlaceOrderView(APIView):
         if not cart.items.exists():
             return Response({"error": "Cart is empty."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # order = Order.objects.create(
-        #     buyer=request.user.buyer_profile,
-        #     total_price=sum(item.product.price * item.quantity for item in cart.items.all())
-        # )
-        # for item in cart.items.all():
-        #     order.items.add(item.product, through_defaults={"quantity": item.quantity})
-        # cart.items.clear()
         orders = []
         for item in cart.items.all():
             order = Order.objects.create(
@@ -87,7 +86,7 @@ class PlaceOrderView(APIView):
                 address=request.data.get('address'),
             )
             orders.append(order)
-        cart.items.clear()
+        cart.items.all().delete()
 
         serializer = OrderSerializer(orders, many=True)
         return Response({"message": "Order(s) placed successfully.", "orders": serializer.data}, status=status.HTTP_201_CREATED)
@@ -98,6 +97,8 @@ class OrderStatusView(APIView):
 
     def get(self, request):
         """Retrieve all orders for the authenticated buyer."""
+        print(f"Authenticated user: {request.user}")  # Add this line for debugging
+
         orders = Order.objects.filter(buyer=request.user.buyer_profile).order_by('-created_at')
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
@@ -115,3 +116,18 @@ class OrderStatusView(APIView):
         order.status = status_update
         order.save()
         return Response({"message": f"Order status updated to {status_update}."}, status=status.HTTP_200_OK)
+    
+
+
+
+
+
+
+class BuyerPurchasesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Retrieve all products that the buyer has purchased."""
+        orders = Order.objects.filter(buyer=request.user.buyer_profile, status='Delivered')
+        purchased_products = [{'product': order.product.id, 'name': order.product.name} for order in orders]
+        return Response(purchased_products)

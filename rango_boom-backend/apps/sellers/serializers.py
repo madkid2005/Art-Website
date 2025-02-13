@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import SellerProfile, CustomUser
-from apps.store.models import Product
+from apps.store.models import Product, Category
 from apps.orders.models import Order
 
 # USER serializer
@@ -17,12 +17,14 @@ class SellerProfileSerializer(serializers.ModelSerializer):
 
 
 # Seller Products
-class SellerProductSerializer(serializers.ModelSerializer):
-    seller = serializers.PrimaryKeyRelatedField(queryset=SellerProfile.objects.all())
+# class SellerProductSerializer(serializers.ModelSerializer):
+#     seller = serializers.PrimaryKeyRelatedField(queryset=SellerProfile.objects.all())
+#     # category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+#     image = serializers.SerializerMethodField(method_name="get_image_url")  # تغییر نام متد
 
-    class Meta:
-        model = Product
-        fields = ['id', 'name', 'price', 'description', 'category', 'stock', 'created_at', 'updated_at', 'image']
+#     class Meta:
+#         model = Product
+#         fields = ['id', 'name', 'price', 'description', 'category', 'stock', 'created_at', 'updated_at', 'image']
 
 # Seller Orders
 class SellerOrderSerializer(serializers.ModelSerializer):
