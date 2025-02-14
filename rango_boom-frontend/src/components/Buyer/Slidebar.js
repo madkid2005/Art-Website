@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './css/Slidebar.css'; // فایل CSS را وارد کنید
 import AccountInfo from './AccountInfo';
+import BuyerOrders from './BuyerOrders';
 
 const Sidebar = () => {
   const Access = localStorage.getItem("accessBuyer") || "";
@@ -83,12 +84,11 @@ const Sidebar = () => {
               {activePanel === "account" && <div><h5>اطلاعات حساب</h5>
 
                 <AccountInfo />
-                <p>لیست سفارش‌های شما نمایش داده می‌شود.</p>
 
 
               </div>}
 
-              {activePanel === "orders" && <div><h5>سفارش‌ها</h5><p>لیست سفارش‌های شما نمایش داده می‌شود.</p></div>}
+              {activePanel === "orders" && <div><h5>سفارش‌ها</h5><p><BuyerOrders/></p></div>}
               {activePanel === "lists" && <div><h5>لیست‌های من</h5><p>لیست‌های ذخیره‌شده شما اینجاست.</p></div>}
               {activePanel === "addresses" && <div><h5>آدرس‌ها</h5><p>اینجا می‌توانید آدرس‌های خود را مدیریت کنید.</p></div>}
               {activePanel === "messages" && <div><h5>پیام‌ها</h5><p>پیام‌های دریافتی شما در اینجا نمایش داده می‌شود.</p></div>}

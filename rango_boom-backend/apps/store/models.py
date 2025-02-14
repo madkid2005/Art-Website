@@ -4,6 +4,7 @@ from apps.sellers.models import SellerProfile
 from apps.buyers.models import BuyerProfile
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.translation import gettext_lazy as _
+from django.utils.text import slugify
 
 class Category(MPTTModel):
     name = models.CharField(_("دسته بندی محصول"), max_length=255, unique=True)
@@ -23,7 +24,7 @@ class Category(MPTTModel):
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name=_("دسته‌بندی"))
     seller = models.ForeignKey(SellerProfile, on_delete=models.CASCADE, related_name='products', verbose_name=_("فروشنده"))
-
+    # infos
     name = models.CharField(_("اسم محصول"), max_length=255)
     description = models.TextField(_("درباره ی محصول"),)
     price = models.DecimalField(_("قیمت"), max_digits=10, decimal_places=2)
@@ -31,17 +32,16 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(_("تعداد موجود"),)
     dimensions = models.CharField(_(" ابعاد"), max_length=255, blank=True, null=True)  
     size = models.CharField(_(" اندازه "), max_length=100, blank=True, null=True) 
-
+    # time
     created_at = models.DateTimeField(_(" تاریخ ایجاد محصول "), auto_now_add=True)
     updated_at = models.DateTimeField(_(" تاریخ ویرایش محصول "), auto_now=True)
-
+    # sale
     is_on_sale = models.BooleanField(_("تخفیف خورده ؟"), default=False)
     sale_price = models.DecimalField(_("قیمت تخفیف خورده"), max_digits=10, decimal_places=2, null=True, blank=True)
-
-    slug = models.SlugField(unique=True)
-
+    # slug
+    slug = models.SlugField(unique=True, blank=True)
+    # fast send
     fast_send = models.BooleanField(_(" ارسال سریع ؟" ), default=False)
-
     # Add custom features as a JSONField
     custom_features = models.JSONField(_("ویژگی های سفارشی"), default=list, blank=True)
 
@@ -50,16 +50,22 @@ class Product(models.Model):
 
     # Price
     def formatted_price(self, obj):
-        return f"{obj.price:,.0f} Toman"  # Format with commas and add "Toman"
+        return f"{obj.price:,.0f} تومان"  # Format with commas and add "Toman"
     
-    formatted_price.short_description = "Price (Toman)"  # Column name in the admin panel
+    formatted_price.short_description = "Price (تومان)"  # Column name in the admin panel
 
     # Sale_price
     def formatted_sale_price(self, obj):
-        return f"{obj.sale_price:,.0f} Toman"  # Format with commas and add "Toman"
+        return f"{obj.sale_price:,.0f} تومان"  # Format with commas and add "Toman"
     
-    formatted_sale_price.short_description = "Price (Toman)"  # Column name in the admin panel
+    formatted_sale_price.short_description = "Price (تومان)"  # Column name in the admin panel
 
+    # auto slug
+    def save(self, *args, **kwargs):
+        """Auto-generate slug"""
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
    
 class Rating(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='ratings', verbose_name=_("محصول"))

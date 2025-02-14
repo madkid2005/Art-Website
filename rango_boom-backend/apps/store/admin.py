@@ -4,7 +4,9 @@ from django.utils.safestring import mark_safe
 from django.utils.html import format_html  
 from mptt.admin import MPTTModelAdmin
 from django.utils.translation import gettext_lazy as _
-from django import forms
+from apps.store.forms import ProductForm
+
+
 
 # Child Category Adding 
 class SubCategoryInline(admin.TabularInline):
@@ -32,26 +34,12 @@ class CategoryAdmin(MPTTModelAdmin):
 
     icon_preview.short_description = "Icon Preview"
 
-# Products
-class ProductForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        fields = ['name', 'description', 'price', 'image', 'category', 'custom_features', 'seller', 'dimensions', 'size', 'slug', 'stock']
 
-    custom_features = forms.JSONField(
-        required=False,
-        widget=forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter key-value pairs as a JSON, max 6 features'}),
-    )
-    # Make the 'slug' field read-only in the form since it will be auto-generated in the admin
-    slug = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'readonly': 'readonly'})
-    )
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductForm
-    list_display = ('name', 'category', 'seller', 'formatted_price', 'stock', 'is_on_sale', 'image_preview',)
+    list_display = ('name', 'category', 'seller', 'formatted_price', 'stock', 'is_on_sale', 'fast_send', 'image_preview',)
     list_filter = ('category', 'seller', 'is_on_sale')
     search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}

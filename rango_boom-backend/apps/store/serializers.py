@@ -39,7 +39,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
     # Image
     image = serializers.ImageField(required=True)  # Ensure it's a proper image field
-    # image = serializers.SerializerMethodField(method_name="get_image_url")  # تغییر نام متد
 
     # Rating
     average_rating = serializers.SerializerMethodField()
@@ -61,10 +60,10 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.ratings.aggregate(Avg('score'))['score__avg']
 
     def get_formatted_price(self, obj):
-        return f"{obj.price:,.0f} Toman"
+        return f"{obj.price:,.0f} تومان"
     
     def get_formatted_sale_price(self, obj):
-        return f"{obj.sale_price:,.0f} Toman"
+        return f"{obj.sale_price:,.0f} تومان"
     
     def validate_image(self, value):
         """Ensure that the uploaded image has dimensions 300x400"""
@@ -75,6 +74,12 @@ class ProductSerializer(serializers.ModelSerializer):
                 raise ValidationError("Image must be 300x400 pixels.")
         except Exception as e:
             raise ValidationError(f"Invalid image: {e}")
+        return value
+    
+    def validate_custom_features(self, value):
+        """Ensure custom features are valid JSON"""
+        if not isinstance(value, list):
+            raise serializers.ValidationError("Custom features must be a list of key-value pairs.")
         return value
     
 # Rating Serializer

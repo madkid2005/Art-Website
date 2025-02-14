@@ -62,16 +62,15 @@ export default function AccountInfo() {
     
     <div className="container mt-4">
       <div className="row justify-content-start">
-        <div className="col-md-8 col-12">
+        <div className="col-md-12 col-12">
           <div class="mt-3 mb-1 me-1">
-            <strong>  اطلاعات حساب </strong>  
           </div>  
 
           {/* User account info */}
-          <div className="border rounded-3 p-1 border-2 border-success">
+          <div className=" rounded-3 p-1 ">
             <div className="row">
 
-              <div className="col-md-12 mt-3 mb-3">
+              <div className="col-md-5 mt-3 mb-3">
                 <p class="mt-3 me-3">
                   <i className="bi bi-person-fill mx-3 text-primary"></i>
                   <strong>نام : </strong>
@@ -143,7 +142,7 @@ export default function AccountInfo() {
                 </p>
               </div>
 
-              <div className="col-md-6 mt-3">
+              <div className="col-md-5 mt-3">
 
 
 
