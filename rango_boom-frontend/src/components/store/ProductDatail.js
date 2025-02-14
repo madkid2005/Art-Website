@@ -1,284 +1,149 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './css/ProductDetail.css';
-import { FaStar } from 'react-icons/fa';
 
 export default function ProductDetail() {
-    const { ID } = useParams();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [addingToCart, setAddingToCart] = useState(false);
-    const [rating, setRating] = useState(5);
-    const [comment, setComment] = useState("");
-    const [message, setMessage] = useState("");
-    const [ShowComments, setShowComments] = useState([]);
-    const [hover, setHover] = useState(null);
-    const words = product?.description ? product.description.split(" ") : [];
+  const { ID } = useParams(); // Get product ID from URL params
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: '', comment: '' });
+  const [error, setError] = useState(null);
 
-    const [showFull, setShowFull] = useState(false); // کنترل نمایش متن کامل
-    const Access = localStorage.getItem("accessBuyer") || "";
+  const Access = localStorage.getItem("accessBuyer"); // Get the authentication token from localStorage
 
-    const addToCart = () => {
-        if (!Access) {
-            alert("Please log in to add items to the cart.");
-            return;
+  // Fetch product details and reviews when component mounts
+  useEffect(() => {
+    fetchProductDetails();
+    fetchReviews();
+  }, [ID]);
+
+  // Fetch product details
+  const fetchProductDetails = () => {
+    fetch(`http://127.0.0.1:8000/api/store/products/${ID}/`)
+      .then(res => res.json())
+      .then(data => {
+        setProduct(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching product:', error);
+        setError('Unable to fetch product details.');
+        setLoading(false);
+      });
+  };
+
+  // Fetch product reviews
+  const fetchReviews = () => {
+    fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${Access}`,
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setReviews(data);
+      })
+      .catch(error => {
+        console.error('Error fetching reviews:', error);
+        setError('Unable to fetch reviews.');
+      });
+  };
+
+  // Submit a new review
+  const submitReview = () => {
+    if (!newReview.rating || !newReview.comment) {
+      alert('Please provide both a rating and a comment.');
+      return;
+    }
+
+    fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Access}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newReview)
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Failed to submit review.");
         }
+        return res.json();
+      })
+      .then(data => {
+        setReviews([...reviews, data]);
+        setNewReview({ rating: '', comment: '' });
+        alert('Review submitted successfully!');
+      })
+      .catch(error => {
+        console.error('Error submitting review:', error);
+        alert('Failed to submit the review.');
+      });
+  };
 
-        setAddingToCart(true);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-        fetch("http://127.0.0.1:8000/api/orders/cart/", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${Access}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                product_id: product.id,
-                quantity: 1,
-            }),
-        })
-            .then(res => res.json())
-            .then(cartData => {
-                setAddingToCart(false);
-                if (cartData.detail) {
-                    alert(cartData.detail);
-                } else {
-                    alert('Product added to cart successfully!');
-                }
-            })
-            .catch(error => {
-                console.error("Error adding to cart:", error);
-                setAddingToCart(false);
-                alert('Failed to add product to cart.');
-            });
-    };
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-    useEffect(() => {
-            // GET COMMENT
-
-            fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${Access}`,
-                    "Content-Type": "application/json",
-                },
-            })
-                .then(res => res.json())
-                .then(data => {
-                    setShowComments(data);
-                })
-                .catch(error => console.error("Error fetching reviews:", error));
-    
-        fetch(`http://127.0.0.1:8000/api/store/products/${ID}/`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.detail) {
-                    setError('Product not found.');
-                } else {
-                    setProduct(data);
-                }
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching product:', error);
-                setError('Error fetching product.');
-                setLoading(false);
-            });
-
-        // Fetch comments after product is loaded
-        fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
-            headers: {
-                Authorization: `Bearer ${Access}`,
-                "Content-Type": "application/json",
-            },
-        })
-            .then(res => res.json())
-            .then(data => console(data))
-            .catch(error => console.error('Error fetching reviews:', error));
-    }, [ID, Access]);
-
-    if (loading) return <div className="loading">Loading...</div>;
-    if (error) return <div className="error">{error}</div>;
-
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-        if (rating === 0) {
-            setMessage("لطفاً امتیاز خود را انتخاب کنید.");
-            return;
-        }
-        handleSubmit(e);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!Access) {
-            setMessage("لطفاً ابتدا وارد حساب کاربری خود شوید.");
-            return;
-        }
-
-        const reviewData = {
-            rating,
-            comment,
-            product: ID,
-            buyer: "ss", // in a real application, replace with logged-in user id
-        };
-
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${Access}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(reviewData),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.detail || "مشکلی در ارسال نظر وجود دارد");
-            }
-
-            setMessage("نظر شما با موفقیت ثبت شد!");
-            setRating(5);
-            setComment("");
-
-            // Refresh comments after submission
-            setShowComments(prevComments => [...prevComments, data]);
-        } catch (error) {
-            console.error("Error:", error);
-            setMessage("خطایی رخ داد، لطفاً دوباره امتحان کنید.");
-        }
-    };
-    
-
-    return (
-        <div className="container mt-5">
-            <div className="row">
-                <div className="col-md-3">
-                    <img src={product.image} className="img-fluid rounded-3" alt={product.name} />
-                </div>
-                <div className="col-md-5">
-                    <div className="product-info">
-                        <h5>{product.name}</h5>
-                        <div className="row mt-5">
-                            {Object.entries(product.custom_features || {}).map(([key, value], index) => (
-                                <div
-                                    className="col-md-4 mb-1 rounded-3 gap-2 text-center p-3 rounded"
-                                    key={index}
-                                    style={{
-                                        backgroundColor: "#f6f6f6",
-                                        border: "1px solid #ddd",
-                                        borderRadius: "8px",
-                                    }}
-                                >
-                                    <strong>{key}</strong>: {value}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-3 rounded-3 border" style={{ backgroundColor: "#f6f6f6" }}>
-                    <span className='fw-bold'>
-                        <br />
-                        <span><i className="bi bi-shop fs-4 text-success p-2"></i></span>
-                        فروشنده
-                    </span>
-                    <br />
-                    <strong className='me-5'>{product.seller_store_name}</strong>
-                    <br />
-                    <hr />
-                    <p className="text-start mt-3">
-                        <span className='fw-bold'>
-                            {product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                        </span>
-                        <span className='font-Homa mx-2'>تومان</span>
-                    </p>
-                    <div className="text-center">
-                        <small className="text-danger fw-bold">تعداد موجودی در انبار {product.stock}</small>
-                    </div>
-                    <div className="product-actions">
-                        <button
-                            onClick={addToCart}
-                            className="btnrgb border btn-lg w-100"
-                            disabled={addingToCart}
-                        >
-                            {addingToCart ? 'Adding to Cart...' : 'اضافه کردن به سبد خرید'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div className="text-center">
-                <h4>توضیحات:</h4>
-                <p className="product-description">
-                    {showFull ? product.description : words.slice(0, 30).join(" ") + "..." }
-                </p>
-                {!showFull && words.length > 30 && (
-                    <button
-                        className="mt-2 px-3 py-1 btn "
-                        onClick={() => setShowFull(true)}
-                    >
-                        <i className="bi bi-arrow-bar-down fs-4"></i>
-                    </button>
-                )}
-            </div>
-
-            <div className="row mt-4">
-                <div className="col-md-3 col-sm-12">
-                    <div className="border rounded-4">
-                        <div className="p-3">
-                            <h5 className='mt-2'>دیدگاه کاربران</h5>
-                            {message && <p className="text-info">{message}</p>}
-                            <form onSubmit={handleFormSubmit} className=''>
-                                <div className="d-flex">
-                                    <span className='mt-3 px-2'>امتیاز:</span>
-                                    <div className="star-rating">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <FaStar
-                                                key={star}
-                                                size={30}
-                                                style={{ cursor: "pointer" }}
-                                                color={star <= (hover || rating) ? "#FFD700" : "#ccc"}
-                                                onClick={() => setRating(star)}
-                                                onMouseEnter={() => setHover(star)}
-                                                onMouseLeave={() => setHover(null)}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                                <label className='mt-2'>نظر شما:</label>
-                                <input
-                                    className="review-input"
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                    required
-                                />
-                                <button className="review-btn" type="submit">ارسال نظر</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="col-sm-12 col-md-8">
-                    {ShowComments.map((ShowComment, index) => (
-                        <div key={index} className="comment-item">
-                            <div className="stars">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <i
-                                        key={star}
-                                        className={`bi bi-star${star <= ShowComment.rating ? '-fill' : ''} fs-4 text-warning`}
-                                    ></i>
-                                ))}
-                            </div>
-                            <p className="comment-text">{ShowComment.comment}</p>
-                            <p className="comment-user">By {ShowComment.buyer}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+  return (
+    <div className="container mt-5">
+      <div className="row">
+        {/* Product Image */}
+        <div className="col-md-6">
+          <img src={product?.image} alt={product?.name} className="img-fluid" />
         </div>
-    );
+
+        {/* Product Details */}
+        <div className="col-md-6">
+          <h3>{product?.name}</h3>
+          <p><strong>Price:</strong> ${product?.price}</p>
+          <p>{product?.description}</p>
+
+          {/* Allow all users to leave a review */}
+          <div>
+            <h4>Leave a Review</h4>
+            <div>
+              <label>Rating: </label>
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={newReview.rating}
+                onChange={(e) => setNewReview({ ...newReview, rating: e.target.value })}
+              />
+            </div>
+            <div>
+              <label>Comment: </label>
+              <textarea
+                value={newReview.comment}
+                onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+              />
+            </div>
+            <button onClick={submitReview}>Submit Review</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Product Reviews */}
+      <div className="mt-4">
+        <h4>Reviews</h4>
+        {reviews.length > 0 ? (
+          reviews.map((review, index) => (
+            <div key={index} className="review">
+              <strong>{review.buyer?.name}</strong>
+              <p>Rating: {review.rating}</p>
+              <p>{review.comment}</p>
+            </div>
+          ))
+        ) : (
+          <p>No reviews yet.</p>
+        )}
+      </div>
+    </div>
+  );
 }

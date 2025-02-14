@@ -24,6 +24,8 @@ from apps.store.serializers import ProductSerializer
 
 # Generate OTP code <for registering sellers>
 class GenerateSellerOTP(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         mobile_number = request.data.get("mobile_number")
         if not mobile_number:
@@ -40,6 +42,8 @@ class GenerateSellerOTP(APIView):
 
 # Verify Seller Mobile-OTP number
 class SellerLogin(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         mobile_number = request.data.get("mobile_number")
         otp = request.data.get("otp")
@@ -81,7 +85,7 @@ class SellerProfileView(APIView):
         """Retrieve seller profile."""
         seller_profile = get_object_or_404(SellerProfile, user=request.user)
         serializer = SellerProfileSerializer(seller_profile)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
         """Allow first-time sellers to submit profile details."""
@@ -216,3 +220,33 @@ class SellerSalesSummaryView(APIView):
             total_revenue=Sum('orders__total_price')
         )
         return Response(sales_summary)
+    
+
+''' GET LIST OF ALL SELLERS '''
+
+class SellerListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        """List all sellers with store name and mobile number."""
+        sellers = SellerProfile.objects.filter(is_approved=True)
+        serializer = SellerProfileSerializer(sellers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+# get current user infos :
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            # Add any other user data you want to include
+        }
+        return Response(user_data)

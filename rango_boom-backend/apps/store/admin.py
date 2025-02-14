@@ -36,7 +36,7 @@ class CategoryAdmin(MPTTModelAdmin):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'image', 'category', 'custom_features',"stock", 'seller', 'dimensions', 'size', 'slug']
+        fields = ['name', 'description', 'price', 'image', 'category', 'custom_features', 'seller', 'dimensions', 'size', 'slug', 'stock']
 
     custom_features = forms.JSONField(
         required=False,

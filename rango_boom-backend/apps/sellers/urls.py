@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     GenerateSellerOTP, SellerLogin, ProductListCreateView,ProductDetailView, 
-    SellerOrderView, SellerSalesSummaryView, SellerProfileView, AdminSellerApprovalView
+    SellerOrderView, SellerSalesSummaryView, SellerProfileView, AdminSellerApprovalView, SellerListView, CurrentUserView
 )
 
 urlpatterns = [
@@ -26,4 +26,11 @@ urlpatterns = [
     # Admin: Approve/Reject Sellers
     path('admin/sellers/', AdminSellerApprovalView.as_view(), name='admin-sellers'),
     path('admin/sellers/<int:seller_id>/approve/', AdminSellerApprovalView.as_view(), name='admin-seller-approve'),
+
+    # List of all sellers 
+    path('list/', SellerListView.as_view(), name='seller-list'),
+
+    # get current user info 
+    path('api/users/me/', CurrentUserView.as_view(), name='current-user'),
+
 ]

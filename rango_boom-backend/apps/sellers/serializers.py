@@ -7,24 +7,15 @@ from apps.orders.models import Order
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'mobile_number', 'is_staff', 'is_seller', 'is_active']
+        fields = ['id', 'is_seller', 'mobile_number', 'is_staff', 'is_active', 'date_joined']
 
 # Seller Profile Serializer
 class SellerProfileSerializer(serializers.ModelSerializer):
+    mobile_number = serializers.CharField(source='user.mobile_number', read_only=True)
     class Meta:
         model = SellerProfile
-        fields = ['id', 'store_name', 'bio', 'phone_number', 'address', 'melicode', 'is_approved']
+        fields = ['id', 'name', 'family_name', 'store_name', 'bio', 'address', 'melicode', 'is_approved', 'mobile_number', 'phone_number']
 
-
-# Seller Products
-# class SellerProductSerializer(serializers.ModelSerializer):
-#     seller = serializers.PrimaryKeyRelatedField(queryset=SellerProfile.objects.all())
-#     # category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-#     image = serializers.SerializerMethodField(method_name="get_image_url")  # تغییر نام متد
-
-#     class Meta:
-#         model = Product
-#         fields = ['id', 'name', 'price', 'description', 'category', 'stock', 'created_at', 'updated_at', 'image']
 
 # Seller Orders
 class SellerOrderSerializer(serializers.ModelSerializer):

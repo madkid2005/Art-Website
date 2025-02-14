@@ -11,6 +11,8 @@ export default function Navbar() {
   const [childrenList, setChildrenList] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [cartItems, setCartItems] = useState([]);
+  const [userRole, setUserRole] = useState(null); // Store the user's role (buyer/seller)
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track if the user is authenticated
 
   const navigate = useNavigate();
 
@@ -21,9 +23,28 @@ export default function Navbar() {
       .then((response) => setCategories(response.data))
       .catch((error) => console.error("Error fetching categories:", error));
 
-    // Fetch cart items if auth token is present
+    // Check if the user is authenticated (by token)
     const token = localStorage.getItem("auth_token");
     if (token) {
+      setIsAuthenticated(true);
+      
+      // Fetch user data to determine if they are a buyer or seller
+      axios
+        .get("http://127.0.0.1:8000/api/users/me/", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setUserRole(response.data.role); // Assuming 'role' is 'buyer' or 'seller'
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+      
+      // Get user role
+      const role = localStorage.getItem("user_role");
+      setUserRole(role);
+      
+      // Fetch cart items 
       axios
         .get("http://127.0.0.1:8000/api/orders/cart/", {
           headers: { Authorization: `Bearer ${token}` },
@@ -72,16 +93,44 @@ export default function Navbar() {
         </div>
 
         {/* لوگو */}
-        <div className="col-md-4 text-center">
+        <div onClick={() => navigate("/")} className="col-md-4 text-center">
           <img className="mt-3" style={{ width: "300px" }} src={logo} alt="Logo" />
         </div>
 
         {/* آیکون‌ها */}
         <div className="col-md-4 mt-3">
           <div className="text-start">
-            <button onClick={() => navigate("/SingupBuyer")} className="btn mx-2">
-              <i className="bi bi-person-fill-gear fw-bold fs-4 text-secondary"></i>
-            </button>
+            {/* Conditionally render the signup buttons based on the user role */}
+            {!isAuthenticated && (
+              <>
+                <button onClick={() => navigate("/SingupBuyer")} className="btn mx-2">
+                  <i className="bi bi-person-fill-gear fw-bold fs-4 text-secondary"></i>
+                </button>
+                <button onClick={() => navigate("/SingupSeller")} className="btn mx-2">
+                  <i className="bi bi-person-badge fw-bold fs-4 text-primary"></i>
+                </button>
+              </>
+            )}
+
+            {/* If the user is a buyer, show the dashboard button and hide the signup button */}
+            {isAuthenticated && userRole === "buyer" && (
+              <>
+                <button onClick={() => navigate("/dashboard")} className="btn mx-2">
+                  <i className="bi bi-house-door fw-bold fs-4 text-success"></i> Dashboard
+                </button>
+              </>
+            )}
+
+            {/* If the user is a seller, show the dashboard button and hide the signup button */}
+            {isAuthenticated && userRole === "seller" && (
+              <>
+                <button onClick={() => navigate("/dashboard")} className="btn mx-2">
+                  <i className="bi bi-house-door fw-bold fs-4 text-success"></i> Dashboard
+                </button>
+              </>
+            )}
+
+            {/* Cart and Order buttons */}
             <button className="btn mx-2" onClick={() => navigate("/cart")}>
               <i className="bi bi-bag-heart fw-bold fs-4 text-danger"></i>
               {cartItems.length > 0 && <span className="badge badge-light">{cartItems.length}</span>}

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 # Middleware
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,6 +59,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware', # CSRF 
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    'rango_boom.middleware.IdentifyUserMiddleware',  # custom middleware here
 
     'django.contrib.messages.middleware.MessageMiddleware',
 
@@ -118,9 +121,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
-    # "DEFAULT_PERMISSION_CLASSES": (
-    #     "rest_framework.permissions.IsAuthenticated",
-    # ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -138,9 +141,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# CORS hEADERS
-CORS_ALLOW_ALL_ORIGINS = True
 
 # Admin panel
 MPTT_ADMIN_LEVEL_INDENT = 20 
@@ -163,6 +163,8 @@ SIMPLE_JWT = {
     "ALGORITHM": "HS256",  # Secure hashing algorithm
     "SIGNING_KEY": SECRET_KEY,  # Uses Django's SECRET_KEY for signing
     "AUTH_HEADER_TYPES": ("Bearer",),  # Expecting "Bearer <token>" in requests
+    'TOKEN_OBTAIN_SERIALIZER': 'sellers.token',
+
 }
 
 # Cors headers 

@@ -33,9 +33,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # Seller OR Buyer
     is_seller = models.BooleanField(default=False)
-    is_buyer = models.BooleanField(default=True)
+    is_buyer = models.BooleanField(default=False)
 
-    # date_joined = models.DateTimeField(auto_now_add=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
 
 
     objects = CustomUserManager()
@@ -60,12 +60,18 @@ class OTP(models.Model):
 
 class SellerProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='seller_profile')
-    store_name = models.CharField(max_length=255)
+
+    name = models.CharField(max_length=15 )
+    family_name = models.CharField(max_length=15 )
     phone_number = models.CharField(max_length=15, unique=True)
+    melicode = models.CharField(max_length=10)
+    age = models.IntegerField(null=True, blank=True)
+    store_name = models.CharField(max_length=255)
     address = models.TextField(blank=True, null=True)
-    melicode = models.CharField(max_length=15)
-    is_approved = models.BooleanField(default=False)
+    zip_code = models.CharField(max_length=15)
     bio = models.TextField(blank=True, null=True)
+
+    is_approved = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

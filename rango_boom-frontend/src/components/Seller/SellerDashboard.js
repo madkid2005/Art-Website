@@ -21,7 +21,10 @@ export default function SellerDashboard() {
   // sale 
   const [onSale, setOnSale] = useState(false);
   const [salePrice, setSalePrice] = useState('');
+  const [SellerInfo, setGetSellerInfo] = useState([])
+
   const cropperRef = useRef(null);
+
 
   const Access = localStorage.getItem("access") || "";
 
@@ -51,8 +54,33 @@ export default function SellerDashboard() {
     console.log(id);
   };
 
+
+
+  // get seller info 
+  const GetSellerInfo = () => {
+    fetch('http://127.0.0.1:8000/api/sellers/profile/',
+      {
+        method: 'GET', 
+        headers: {
+          "Authorization": `Bearer ${Access}`,
+        }
+        }
+    )
+
+      .then(res => res.json())
+      .then(data => {
+        setGetSellerInfo(data)
+        console.log(data)
+      })
+    
+  }
+
+
+  
   useEffect(() => {
     GetSellerID();
+    GetSellerInfo();
+
   }, []);
 
   // Initialize Cropper.js when image is available
@@ -97,6 +125,9 @@ export default function SellerDashboard() {
     resizedCtx.drawImage(canvas, 0, 0, 300, 400); // Resize image
     return resizedCanvas;
   };
+  
+
+
 
   const APISENDCRATEPRODUCT = async () => {
     if (!Access) {
@@ -141,9 +172,11 @@ export default function SellerDashboard() {
           "Authorization": `Bearer ${Access}`,
         },
         body: formData, 
+        
       });
 
       const data = await response.json();
+      console.log(data)
 
       if (response.ok) {
         console.log("Response:", data);
@@ -167,8 +200,11 @@ export default function SellerDashboard() {
               <img className="img-fluid rounded-circle" src={DashboardPNG} alt="تصویر داشبورد" />
             </div>
           </div>
-          <h5 className="text-center mt-3 fw-bold">فروشگاه اپینو</h5>
-          <p className="text-center text-muted">مهدی حسینیان</p>
+          <h5 className="text-center mt-3 fw-bold"> {SellerInfo.store_name} </h5>
+          <p className="text-center text-muted"> {SellerInfo.name} {SellerInfo.family_name} </p>
+          <p className="text-center text-muted"> {SellerInfo.mobile_number} </p>
+
+
   
           <div className="w-100 mt-3">
             <button className="btn d-flex align-items-center w-100 p-2 text-start shadow-sm border-0" onClick={() => handlePanelChange('addProduct')}>

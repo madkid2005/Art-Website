@@ -9,11 +9,13 @@ from .models import Product, Category, Banner, Review
 from .serializers import ProductSerializer, CategorySerializer, BannerSerializer, ReviewSerializer
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from apps.orders.models import Order
 
 # Category view ( Load parents and after childs )
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+   
     queryset = Category.objects.filter(parent__isnull=True)  # Only parent categories
     serializer_class = CategorySerializer
     
@@ -31,11 +33,15 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     
 # load child categories 
 class ChildCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     queryset = Category.objects.filter(subcategories__isnull=True)  # Categories with no children
     serializer_class = CategorySerializer
 
 # Products view 
 class ProductViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     queryset = Product.objects.all().order_by('-created_at')
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -64,6 +70,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 # Banner view
 class BannerViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     """
     API endpoint to retrieve banners.
     """
@@ -93,8 +101,8 @@ class ReviewView(APIView):
         product = get_object_or_404(Product, id=product_id)
         buyer = request.user.buyer_profile
 
-        # if not Order.objects.filter(buyer=buyer, product=product, status='Delivered').exists():
-        #     return Response({"detail": "You can only review products you've purchased."}, status=status.HTTP_400_BAD_REQUEST)
+        if not Order.objects.filter(buyer=buyer, product=product, status='Delivered').exists():
+            return Response({"detail": "You can only review products you've purchased."}, status=status.HTTP_400_BAD_REQUEST)
 
         data = {
             'product': product.id,

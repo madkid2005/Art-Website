@@ -25,8 +25,8 @@ class BuyerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BuyerProfile
-        fields = ['id', 'user', 'name', 'address', 'email', 'phone_number', 'created_at']
-        read_only_fields = ['id', 'user', 'created_at']  # Prevents unwanted updates to user-related fields
+        fields = ['id', 'user', 'name', 'family_name', 'address', 'email', 'phone_number', 'created_at', 'age', 'zip_code', 'meli_code']
+        read_only_fields = ['id', 'user', 'created_at', 'phone_number']  # Prevents unwanted updates to user-related fields
 
 class OrderSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)

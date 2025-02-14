@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
@@ -20,6 +20,8 @@ from apps.orders.models import Order
 
 # Generate OTP
 class GenerateBuyerOTP(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         mobile_number = request.data.get("mobile_number")
         if not mobile_number:
@@ -35,6 +37,8 @@ class GenerateBuyerOTP(APIView):
 
 # Verify OTP and Login/Register
 class BuyerLogin(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this view
+
     def post(self, request):
         mobile_number = request.data.get("mobile_number")
         otp = request.data.get("otp")
@@ -99,5 +103,6 @@ class CheckPurchaseView(APIView):
         """Check if the authenticated buyer has purchased a product."""
 
         user = request.user # Get the authenticated user
-        purchased = Order.objects.filter(order__buyer=user, product_id=product_id).exists()
+        purchased = Order.objects.filter(buyer=user.buyer_profile, product_id=product_id).exists()
         return Response({"purchased": purchased})
+    

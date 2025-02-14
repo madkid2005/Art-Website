@@ -24,12 +24,13 @@ import SellerDashboard from './components/Seller/SellerDashboard';
 import SingupBuyer from './components/Buyer/SingupBuyer';
 import BuyerProfile from './components/Buyer/BuyerProfile';
 import BuyerOrders from './components/Buyer/BuyerOrders';
+import AccountInfo from './components/Buyer/AccountInfo';
+
 
 // Orders 
 import Cart from "./components/Cart-And-Orders/Cart";
 import Checkout from "./components/Cart-And-Orders/Checkout";
 import OrderStatus from "./components/Cart-And-Orders/OrderStatus";
-import Dashboard from './components/Buyer/Dashboard';
 
 
 export default function App() {
@@ -45,40 +46,41 @@ export default function App() {
 
         {/* Products List Page */}
         <Route path="/" element={<Home />} />
-
         {/* Category */}
         <Route path="/products/category/:id" element={<ProductPage />} />
-
         {/* Product detail page */}
         <Route path="/products/productdatial/:ID/" element={<ProductDatail />} />
+
 
         {/* Seller signup */}
         <Route path="/SingupSeller" element={<SingtuSeller />} />
 
-        {/* Buyer signup */}
-        <Route path="/SingupBuyer" element={<SingupBuyer />} />
-
-        <Route path="/dashboard" element={<Dashboard />} />
-
-
+        
         {/* Seller Dashboard */}
         <Route path="/SellerDashboard" element={<SellerDashboard />} />
 
         {/* Buyer Dashborad */}
         <Route path="/BuyerProfile" element={<BuyerProfile />} />
-
-
         <Route path="/buyer-orders" element={<BuyerOrders />} />
+        <Route path="/account-info" element={<AccountInfo />} />
 
-        {/* cart iteams */}
-        <Route path="/cart" element={<Cart />} />
-
-        {/* checkout : after cart and click on checkout (PlaceOrder) */}
-        <Route path="/checkout" element={<Checkout />} />
-
+        {/* Buyer signup */}
+        <Route path="/SingupBuyer" element={<SingupBuyer />} />
         {/* orders status  */}
         <Route path="/orders" element={<OrderStatus />} />
 
+
+
+        {/* cart iteams */}
+        <Route path="/cart" element={<Cart />} />
+        {/* checkout : after cart and click on checkout (PlaceOrder) */}
+        <Route path="/checkout" element={<Checkout />} />
+
+        
+
+        
+
+      
       </Routes>
     </div>
   );

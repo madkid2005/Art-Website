@@ -102,6 +102,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         # Make sure the buyer can only review products they have purchased
         buyer = validated_data['buyer']
         product = validated_data['product']
-        # if not Order.objects.filter(buyer=buyer, product=product, status='Delivered').exists():
-        #     raise serializers.ValidationError("You can only review products you've purchased.")
+        if not Order.objects.filter(buyer=buyer, product=product, status='Delivered').exists():
+            raise serializers.ValidationError("You can only review products you've purchased.")
         return super().create(validated_data)
