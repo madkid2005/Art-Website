@@ -18,13 +18,21 @@ export default function SellerDashboard() {
   const [image, setImage] = useState(null); 
   const [imagePreview, setImagePreview] = useState('https://cloudinary-marketing-res.cloudinary.com/images/w_1000,c_scale/v1679921049/Image_URL_header/Image_URL_header-png?_i=AA'); 
   const [croppedImage, setCroppedImage] = useState(null); 
-  // sale 
+
   const [onSale, setOnSale] = useState(false);
   const [salePrice, setSalePrice] = useState('');
   const [SellerInfo, setGetSellerInfo] = useState([])
 
-  const cropperRef = useRef(null);
+  const [customFeatures, setCustomFeatures] = useState([
+    { key: '', value: '' },
+    { key: '', value: '' },
+    { key: '', value: '' },
+    { key: '', value: '' },
+    { key: '', value: '' },
+    { key: '', value: '' },
+  ]);
 
+  const cropperRef = useRef(null);
 
   const Access = localStorage.getItem("access") || "";
 
@@ -54,8 +62,6 @@ export default function SellerDashboard() {
     console.log(id);
   };
 
-
-
   // get seller info 
   const GetSellerInfo = () => {
     fetch('http://127.0.0.1:8000/api/sellers/profile/',
@@ -75,12 +81,9 @@ export default function SellerDashboard() {
     
   }
 
-
-  
   useEffect(() => {
     GetSellerID();
     GetSellerInfo();
-
   }, []);
 
   // Initialize Cropper.js when image is available
@@ -125,9 +128,14 @@ export default function SellerDashboard() {
     resizedCtx.drawImage(canvas, 0, 0, 300, 400); // Resize image
     return resizedCanvas;
   };
-  
 
-
+  // Handle change for custom features
+  const handleFeatureChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedFeatures = [...customFeatures];
+    updatedFeatures[index][name] = value;
+    setCustomFeatures(updatedFeatures);
+  };
 
   const APISENDCRATEPRODUCT = async () => {
     if (!Access) {
@@ -144,14 +152,15 @@ export default function SellerDashboard() {
 
     formData.append('seller', seller);
     formData.append('slug', slug);
-    //size
     formData.append('dimensions', dimensions);
     formData.append('size', size);
-    //sale
     formData.append('on_sale', onSale);
     if (onSale) {
       formData.append('sale_price', salePrice);
     }
+
+    // Append custom features as a JSON string
+    formData.append('custom_features', JSON.stringify(customFeatures.filter(feature => feature.key && feature.value)));
 
     // Append cropped image to FormData if available
     if (croppedImage) {
@@ -193,42 +202,40 @@ export default function SellerDashboard() {
   return (
     <div className="container-fluid">
       <div className="row">
-        {/* نوار کناری */}
+        {/* Sidebar */}
         <div className="col-md-2 bg-white p-4 shadow-sm vh-100 d-flex flex-column align-items-center">
           <div className="d-flex justify-content-center mt-4">
             <div className="rounded-circle border border-2 p-2">
-              <img className="img-fluid rounded-circle" src={DashboardPNG} alt="تصویر داشبورد" />
+              <img className="img-fluid rounded-circle" src={DashboardPNG} alt="Dashboard" />
             </div>
           </div>
           <h5 className="text-center mt-3 fw-bold"> {SellerInfo.store_name} </h5>
           <p className="text-center text-muted"> {SellerInfo.name} {SellerInfo.family_name} </p>
           <p className="text-center text-muted"> {SellerInfo.mobile_number} </p>
 
-
-  
           <div className="w-100 mt-3">
             <button className="btn d-flex align-items-center w-100 p-2 text-start shadow-sm border-0" onClick={() => handlePanelChange('addProduct')}>
               <i className="bi bi-folder-plus me-2 fs-5 text-primary"></i> اضافه کردن محصول
             </button>
-  
+
             <button className="btn d-flex align-items-center w-100 p-2 text-start shadow-sm border-0 mt-2 text-danger" onClick={() => handlePanelChange('logout')}>
               <i className="bi bi-door-closed me-2 fs-5"></i> خروج از حساب
             </button>
           </div>
-  
+
           <button className="btn w-100 rounded-3 text-white mt-3 shadow-sm" style={{ backgroundColor: "#783dd5" }}>
             ویرایش اطلاعات
           </button>
         </div>
-  
-        {/* محتوای اصلی */}
+
+        {/* Main content */}
         <div className="col-md-10" style={{ backgroundColor: "#f3f2f8", minHeight: "100vh", padding: "2rem" }}>
           {activePanel === 'addProduct' && (
             <div className="card shadow-sm p-4">
               <h3 className="fw-bold text-primary mb-4">افزودن محصول جدید</h3>
               <form onSubmit={(e) => { e.preventDefault(); APISENDCRATEPRODUCT(); }}>
                 <div className="row">
-
+                  {/* Product basic info */}
                   <div className="col-md-6 mb-3">
                     <label className="fw-semibold">دسته‌بندی</label>
                     <input type="number" className="form-control rounded-3" value={category_id} onChange={(e) => setCategory_id(e.target.value)} />
@@ -249,6 +256,29 @@ export default function SellerDashboard() {
                     <input type="number" className="form-control rounded-3" value={price} onChange={(e) => setPrice(e.target.value)} />
                   </div>
 
+                  
+                  <div className="col-md-6 mb-3">
+                    <label className="fw-semibold">تعداد</label>
+                    <input type="number" className="form-control rounded-3" value={stock} onChange={(e) => setStock(e.target.value)} />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="fw-semibold">سایز</label>
+                    <input type="number" className="form-control rounded-3" value={size} onChange={(e) => setSize(e.target.value)} />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="fw-semibold">اندازه</label>
+                    <input type="number" className="form-control rounded-3" value={dimensions} onChange={(e) => setDimensions(e.target.value)} />
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="fw-semibold">slug</label>
+                    <input type="number" className="form-control rounded-3" value={slug} onChange={(e) => setSlug(e.target.value)} />
+                  </div>
+
+
+
                   <div className="col-md-6 mb-3 d-flex align-items-center">
                     <input type="checkbox" className="me-2" checked={onSale} onChange={(e) => setOnSale(e.target.checked)} />
                     <label className="fw-semibold me-1">تخفیف دارد</label>
@@ -260,52 +290,47 @@ export default function SellerDashboard() {
                     </div>
                   )}
                 </div>
-  
+
+                {/* Custom Features */}
                 <div className="row">
-                <div className="col-md-6 mb-3">
-                    <label className="fw-semibold">ابعاد</label>
-                    <input type="text" className="form-control rounded-3" value={dimensions} onChange={(e) => setDimensions(e.target.value)} />
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label className="fw-semibold">اندازه</label>
-                    <input type="text" className="form-control rounded-3" value={size} onChange={(e) => setSize(e.target.value)} />
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label className="fw-semibold">شناسه یکتا (Slug)</label>
-                    <input type="text" className="form-control rounded-3" value={slug} onChange={(e) => setSlug(e.target.value)} />
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label className="fw-semibold">موجودی</label>
-                    <input type="number" className="form-control rounded-3" value={stock} onChange={(e) => setStock(e.target.value)} />
-                  </div>
-
-
+                  <h5 className="fw-bold">ویژگی‌های سفارشی</h5>
+                  {customFeatures.map((feature, index) => (
+                    <div className="col-md-12 mb-3 d-flex" key={index}>
+                      <p className="fw-semibold">ویژگی {index + 1} نام</p>
+                      <input
+                        type="text"
+                        className="form-control w-75 rounded-3"
+                        name="key"
+                        value={feature.key}
+                        onChange={(e) => handleFeatureChange(index, e)}
+                        placeholder="نام ویژگی"
+                      />
+                      <p className="fw-semibold">ویژگی {index + 1} مقدار</p>
+                      <input
+                        type="text"
+                        className="form-control w-75 rounded-3"
+                        name="value"
+                        value={feature.value}
+                        onChange={(e) => handleFeatureChange(index, e)}
+                        placeholder="مقدار ویژگی"
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div className="row">
 
-                  {/* بارگذاری تصویر */}
+                {/* Image upload */}
+                <div className="row">
                   <div className="col-md-6 mb-3">
                     <label className="fw-semibold">تصویر محصول</label>
                     <input type="file" className="form-control rounded-3" onChange={handleImageChange} />
                   </div>
-    
+
                   {imagePreview && (
                     <div className="image-preview mt-3 text-end">
-                      <img ref={cropperRef} src={imagePreview} alt="پیش‌نمایش تصویر" className="img-fluid shadow-sm rounded-3" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-                      <button type="button" onClick={handleCrop} className="btn btn-outline-primary mt-3 me-3">برش تصویر</button>
+                      <img src={imagePreview} alt="پیش‌نمایش تصویر" className="img-fluid shadow-sm rounded-3" style={{ maxWidth: '100%', maxHeight: '300px' }} />
                     </div>
                   )}
-    
-                  {croppedImage && (
-                    <div className="image-preview mt-3 text-center">
-                      <h5 className="fw-bold">تصویر برش‌خورده</h5>
-                      <img src={croppedImage} alt="تصویر برش‌خورده" className="img-fluid shadow-sm rounded-3" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-                    </div>
-                  )}
-              </div>
+                </div>
 
                 <button type="submit" className="btn w-100 rounded-3 mt-3 text-white fw-bold" style={{ backgroundColor: "#783dd5" }}>
                   ارسال محصول
@@ -317,6 +342,4 @@ export default function SellerDashboard() {
       </div>
     </div>
   );
-  
-  
 }

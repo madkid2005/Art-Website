@@ -27,7 +27,7 @@ export default function Navbar() {
     const token = localStorage.getItem("auth_token");
     if (token) {
       setIsAuthenticated(true);
-      
+
       // Fetch user data to determine if they are a buyer or seller
       axios
         .get("http://127.0.0.1:8000/api/users/me/", {
@@ -39,11 +39,11 @@ export default function Navbar() {
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
-      
+
       // Get user role
       const role = localStorage.getItem("user_role");
       setUserRole(role);
-      
+
       // Fetch cart items 
       axios
         .get("http://127.0.0.1:8000/api/orders/cart/", {
@@ -75,7 +75,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="container d-none d-md-block">
+    <div className="container  d-none d-md-block">
       <div className="row mb-2 border-bottom align-items-center">
         {/* دسته‌بندی */}
         <div className="col-md-4 mt-3 position-relative d-flex">
@@ -246,6 +246,29 @@ export default function Navbar() {
           </div>
         </div>
       )}
+      <div className="container-fluid d-md-none fixed-bottom bg-light shadow-lg border-top">
+      <div className="row">
+        <div className="col-3 text-center py-2">
+          <i className="bi bi-house-door fs-4"></i>
+          <div className="small">خانه</div>
+        </div>
+        <div className="col-3 text-center py-2">
+          <i className="bi bi-search fs-4"></i>
+          <div className="small">جستجو</div>
+        </div>
+        <div className="col-3 text-center py-2">
+          <i className="bi bi-bell fs-4"></i>
+          <div className="small">اعلان‌ها</div>
+        </div>
+        <div className="col-3 text-center py-2">
+          <i className="bi bi-person fs-4"></i>
+          <div className="small">پروفایل</div>
+        </div>
+      </div>
     </div>
+    </div>
+
+    // MOBILE RESPANSIVE
+
   );
 }

@@ -36,6 +36,7 @@ export default function BuyerOrders() {
 
   return (
     <div className="container mt-4">
+      <h2>My Orders</h2>
       <table className="table">
         <thead>
           <tr>

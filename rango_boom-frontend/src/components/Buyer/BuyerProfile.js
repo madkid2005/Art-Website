@@ -61,9 +61,11 @@ export default function Dashboard() {
   return (
     
     <div className="container mt-4">
-      
+
       <div className="row justify-content-start">
-      <Sidebar />
+        <div className="col-md-4 ">
+        <Sidebar />
+        </div>
       </div>
 
     </div>

@@ -10,7 +10,7 @@ export default function CenterBanner() {
         fetch("http://127.0.0.1:8000/api/store/banners/") // API برای بارگذاری تصاویر
             .then(res => res.json())
             .then(data => {
-                const filteredBanners = data.filter(banner => banner.order >= 6 && banner.order <= 8);
+                const filteredBanners = data.filter(banner => banner.order >= 6 && banner.order <= 9);
                 setBigbanners(filteredBanners); // ذخیره تصاویر فیلتر شده در state
                 setLoading(false); // Set loading to false when data is fetched
             })
@@ -40,7 +40,7 @@ export default function CenterBanner() {
         <div className="container my-4">
             <div className="row g-3">
                 {Bigbanners.map((Bigbanner, index) => (
-                    <div key={index} className="col-12 col-md-4">
+                    <div key={index} className="col-6 col-sm-6 col-md-4 col-lg-3">
                         <div className="card shadow-sm border-0">
                             <img 
                                 src={Bigbanner.image} 

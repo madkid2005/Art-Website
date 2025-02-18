@@ -38,8 +38,12 @@ export default function CategoryList() {
         slidesPerView={6}
         spaceBetween={20}
         breakpoints={{
-          640: {
+          320: {
             slidesPerView: 2,
+            spaceBetween: 10,
+          },
+          640: {
+            slidesPerView: 3,
             spaceBetween: 10,
           },
           768: {
@@ -59,16 +63,16 @@ export default function CategoryList() {
             <SwiperSlide key={category.id} className="category-slide">
               <div
                 onClick={checkname}
-                className="circle-border"
+                className="circle-border text-center"
                 data-name={category.id}
               >
                 <img
                   src={category.icon}
                   alt={category.name}
-                  className="img-fluid"
+                  className="img-fluid rounded-circle" // To keep images circular and responsive
                 />
               </div>
-              <span>{category.name}</span>
+              <span className="d-block mt-2 text-center">{category.name}</span> {/* Centered category name */}
             </SwiperSlide>
           ))
         ) : (

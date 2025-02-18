@@ -19,6 +19,7 @@ import ProductDatail from './components/store/ProductDatail';
 // Seller
 import SingtuSeller from './components/Seller/SingupSeller';
 import SellerDashboard from './components/Seller/SellerDashboard';
+import AddProduct from './components/Seller/AddProduct';
 
 // Buyer
 import SingupBuyer from './components/Buyer/SingupBuyer';
@@ -31,6 +32,8 @@ import AccountInfo from './components/Buyer/AccountInfo';
 import Cart from "./components/Cart-And-Orders/Cart";
 import Checkout from "./components/Cart-And-Orders/Checkout";
 import OrderStatus from "./components/Cart-And-Orders/OrderStatus";
+import MobileBtn from './components/store/MobileBtn';
+import Footer from './components/store/Footer';
 
 
 export default function App() {
@@ -42,6 +45,7 @@ export default function App() {
   return (
     <div style={{ direction: 'rtl' }}>
       {showHeader && <Navbar />}
+      <MobileBtn/>
       <Routes>
 
         {/* Products List Page */}
@@ -54,16 +58,15 @@ export default function App() {
 
         {/* Seller signup */}
         <Route path="/SingupSeller" element={<SingtuSeller />} />
-
-        
         {/* Seller Dashboard */}
         <Route path="/SellerDashboard" element={<SellerDashboard />} />
+        <Route path="/add-product" element={<AddProduct />} />
+
 
         {/* Buyer Dashborad */}
         <Route path="/BuyerProfile" element={<BuyerProfile />} />
         <Route path="/buyer-orders" element={<BuyerOrders />} />
         <Route path="/account-info" element={<AccountInfo />} />
-
         {/* Buyer signup */}
         <Route path="/SingupBuyer" element={<SingupBuyer />} />
         {/* orders status  */}
@@ -97,7 +100,7 @@ function Home() {
       <Productbestratings />
       <EndBanner />
       <Productlatest />
-      صفحه اصلی
+      <Footer/>
     </div>
   );
 }

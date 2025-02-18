@@ -10,7 +10,7 @@ import "./css/Product_bestratings.css"; // فایل استایل سفارشی
 
 const Product_bestratings = () => {
     const [products, setProducts] = useState([]);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     // دریافت داده‌ها از API
     useEffect(() => {
@@ -20,13 +20,14 @@ const Product_bestratings = () => {
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
-    const GetIdProduct = (e)=>{
-        const ID = e.currentTarget.getAttribute("data-ID")
+    const GetIdProduct = (e) => {
+        const ID = e.currentTarget.getAttribute("data-ID");
         console.log('====================================');
         console.log(ID);
         console.log('====================================');
-        navigate(`/products/productdatial/${ID}`)
-    }
+        navigate(`/products/productdatial/${ID}`);
+    };
+
     return (
         <div className="container-fluid m-2 rtl">
             <h2 className="text-center text-dark font-weight-bold mb-4">
@@ -34,34 +35,42 @@ const Product_bestratings = () => {
             </h2>
             <div className="border p-3 border-2 rounded-3">
 
-            <Swiper
-    slidesPerView={window.innerWidth < 768 ? 2 : 5} // نمایش کمتر در موبایل
-    spaceBetween={20}
-    navigation={true}
-    modules={[Pagination, Navigation]}
-    className="mySwiper"
->
-    {products.length > 0 ? (
-        products.map((product) => (
-            <SwiperSlide key={product.id}>
-                <div onClick={GetIdProduct} data-ID={product.id} className="product-card">
-                    <img src={product.image} alt={product.name} />
-                    <div className="p-2">
-                        <span className="product-title">{product.name}</span>
-                        <div className="product-prices">
-                            <h6>
-                                {Math.floor(product.price)}
-                                <small className="mx-2">تومان</small>
-                            </h6>
-                        </div>
-                    </div>
-                </div>
-            </SwiperSlide>
-        ))
-    ) : (
-        <p className="text-center text-danger">هیچ محصولی یافت نشد.</p>
-    )}
-</Swiper>
+                <Swiper
+                    slidesPerView={window.innerWidth < 768 ? 2 : window.innerWidth < 992 ? 3 : 5} // Responsive based on screen size
+                    spaceBetween={20}
+                    navigation={true}
+                    modules={[Pagination, Navigation]}
+                    className="mySwiper"
+                >
+                    {products.length > 0 ? (
+                        products.map((product) => (
+                            <SwiperSlide key={product.id}>
+                                <div 
+                                    onClick={GetIdProduct} 
+                                    data-ID={product.id} 
+                                    className="product-card"
+                                >
+                                    <img 
+                                        src={product.image} 
+                                        alt={product.name} 
+                                        className="img-fluid rounded" // Bootstrap responsive image
+                                    />
+                                    <div className="p-2">
+                                        <span className="product-title">{product.name}</span>
+                                        <div className="product-prices">
+                                            <h6>
+                                                {Math.floor(product.price)}
+                                                <small className="mx-2">تومان</small>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </SwiperSlide>
+                        ))
+                    ) : (
+                        <p className="text-center text-danger">هیچ محصولی یافت نشد.</p>
+                    )}
+                </Swiper>
 
             </div>
         </div>
