@@ -44,9 +44,8 @@ export default function CenterBanner() {
                         <div className="card shadow-sm border-0">
                             <img 
                                 src={Bigbanner.image} 
-                                className="card-img-top rounded-3 fade-in" // Apply fade-in class
+                                className="w-100 rounded-3" // Apply fade-in class
                                 alt={`Banner ${index + 1}`} 
-                                style={{ objectFit: 'cover', height: '390px' }} // Prevent image stretching
                             />
                         </div>
                     </div>

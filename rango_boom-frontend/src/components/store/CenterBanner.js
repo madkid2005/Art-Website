@@ -10,7 +10,7 @@ export default function CenterBanner() {
         fetch("http://127.0.0.1:8000/api/store/banners/") // API برای بارگذاری تصاویر
             .then(res => res.json())
             .then(data => {
-                const filteredBanners = data.filter(banner => banner.order >= 6 && banner.order <= 9);
+                const filteredBanners = data.filter(banner => banner.order >= 30 && banner.order <= 33);
                 setBigbanners(filteredBanners); // ذخیره تصاویر فیلتر شده در state
                 setLoading(false); // Set loading to false when data is fetched
             })
@@ -44,9 +44,8 @@ export default function CenterBanner() {
                         <div className="card shadow-sm border-0">
                             <img 
                                 src={Bigbanner.image} 
-                                className="card-img-top rounded-3 fade-in" // Apply fade-in class
+                                className="w-100 rounded-3" // Apply fade-in class
                                 alt={`Banner ${index + 1}`} 
-                                style={{ objectFit: 'cover', height: '390px' }} // Prevent image stretching
                             />
                         </div>
                     </div>

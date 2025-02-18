@@ -5,6 +5,8 @@ const MobileBtn = () => {
 
   return (
     <div className="container-fluid d-md-none fixed-bottom bg-light shadow-lg border-top">
+     
+    
       <div className="row">
         <div className="col-3 text-center py-2" onClick={() => setActive("home")}>
           <i className={`bi bi-house-door fs-4 ${active === "home" ? "text-dark fw-bold" : "text-secondary"}`}></i>

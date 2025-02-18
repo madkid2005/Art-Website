@@ -93,7 +93,7 @@ export default function Navbar() {
         </div>
 
         {/* لوگو */}
-        <div onClick={() => navigate("/")} className="col-md-4 text-center">
+        <div onClick={() => navigate("/")} className="col-md-4  text-center">
           <img className="mt-3" style={{ width: "300px" }} src={logo} alt="Logo" />
         </div>
 
