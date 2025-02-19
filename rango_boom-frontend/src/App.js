@@ -32,9 +32,6 @@ import AccountInfo from './components/Buyer/AccountInfo';
 import Cart from "./components/Cart-And-Orders/Cart";
 import Checkout from "./components/Cart-And-Orders/Checkout";
 import OrderStatus from "./components/Cart-And-Orders/OrderStatus";
-import MobileBtn from './components/store/MobileBtn';
-import Footer from './components/store/Footer';
-import Logo from './components/store/Logo';
 
 
 export default function App() {
@@ -46,8 +43,6 @@ export default function App() {
   return (
     <div style={{ direction: 'rtl' }}>
       {showHeader && <Navbar />}
-      <Logo/>
-      <MobileBtn/>
       <Routes>
 
         {/* Products List Page */}
@@ -102,7 +97,7 @@ function Home() {
       <Productbestratings />
       <EndBanner />
       <Productlatest />
-      <Footer/>
+      صفحه اصلی
     </div>
   );
 }

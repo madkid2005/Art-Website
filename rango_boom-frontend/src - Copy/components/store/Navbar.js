@@ -82,6 +82,18 @@ export default function Navbar() {
     }
     navigate("/place-order");
   };
+  // const clickCategory = ()=>{
+  //   fetch(`http://127.0.0.1:8000/api/store/products/?category=${SelectID}`,{
+  //     method:"GET",
+
+  //   })
+  //   .then(res => res.json())
+  //   .then(data =>{
+  //     console.log('====================================');
+  //     console.log(data);
+  //     console.log('====================================');
+  //   })
+  // }
 
   return (
     

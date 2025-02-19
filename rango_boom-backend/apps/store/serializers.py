@@ -5,6 +5,7 @@ from PIL import Image
 
 from .models import Product, Category, Rating, Banner, Review
 from apps.sellers.models import SellerProfile
+from apps.buyers.models import BuyerProfile
 from apps.orders.models import Order
 # Category Serializer
 class CategorySerializer(serializers.ModelSerializer):
@@ -45,6 +46,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     # Price (Toman)
     formatted_price = serializers.SerializerMethodField()
+    formatted_sale_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -60,10 +62,12 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.ratings.aggregate(Avg('score'))['score__avg']
 
     def get_formatted_price(self, obj):
-        return f"{obj.price:,.0f} تومان"
+        return f"{obj.price:,.0f} "
     
     def get_formatted_sale_price(self, obj):
-        return f"{obj.sale_price:,.0f} تومان"
+        if obj.sale_price is None:
+            return None 
+        return f"{obj.sale_price:,.0f} "
     
     def validate_image(self, value):
         """Ensure that the uploaded image has dimensions 300x400"""
@@ -99,9 +103,13 @@ class BannerSerializer(serializers.ModelSerializer):
 
 # Comment serializer
 class ReviewSerializer(serializers.ModelSerializer):
+    buyer = serializers.PrimaryKeyRelatedField(queryset=BuyerProfile.objects.all())
+    buyer_name = serializers.CharField(source="buyer.name", read_only=True)
+    buyer_family_name = serializers.CharField(source="buyer.family_name", read_only=True)
+
     class Meta:
         model = Review
-        fields = ['id', 'product', 'buyer', 'rating', 'comment', 'created_at']
+        fields = ['id', 'product', 'buyer','buyer_name', 'buyer_family_name', 'rating', 'comment', 'created_at']
 
     def create(self, validated_data):
         # Make sure the buyer can only review products they have purchased

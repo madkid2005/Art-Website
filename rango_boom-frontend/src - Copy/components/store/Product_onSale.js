@@ -21,7 +21,7 @@ const ProductSlider = () => {
     }, []);
 
     const GetIdProduct = (e)=>{
-        const ID = e.currentTarget.getAttribute("data-ID")
+        const ID = e.currentTarget.getAttribute("data-id")
         console.log('====================================');
         console.log(ID);
         console.log('====================================');
@@ -45,7 +45,7 @@ const ProductSlider = () => {
                     {products && products.length > 0 ? (
                         products.map((product) => (
                             <SwiperSlide key={product.id}>
-                                <div onClick={GetIdProduct} data-ID={product.id}  className="product-card position-relative bg-white rounded-lg">
+                                <div onClick={GetIdProduct} data-id={product.id}  className="product-card position-relative bg-white rounded-lg">
                                     {/* تایمر بالای کارت */}
 
                                     {/* تصویر محصول */}

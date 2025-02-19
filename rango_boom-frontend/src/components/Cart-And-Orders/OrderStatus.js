@@ -51,7 +51,7 @@ const OrderStatus = () => {
               <div>Status: {order.status}</div>
               <div>Address: {order.address}</div>
 
-              <div class="mt-3"></div>
+              <div className="mt-3"></div>
               <div>tedad: {order.quantity}</div>
               <div>phone number: {order.buyer_phone}</div>
               <div>jame faktor: {order.total_price}</div>

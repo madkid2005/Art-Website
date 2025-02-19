@@ -19,6 +19,7 @@ export default function ProductDetail() {
     const [showFull, setShowFull] = useState(false); // کنترل نمایش متن کامل
     const Access = localStorage.getItem("accessBuyer") || "";
 
+    // ADD TO CART
     const addToCart = () => {
         if (!Access) {
             alert("Please log in to add items to the cart.");
@@ -55,21 +56,22 @@ export default function ProductDetail() {
     };
 
     useEffect(() => {
-            // GET COMMENT
 
-            fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${Access}`,
-                    "Content-Type": "application/json",
-                },
+        // GET COMMENTS
+        fetch(`http://127.0.0.1:8000/api/store/products/${ID}/reviews/`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${Access}`,
+                "Content-Type": "application/json",
+            },
+        })
+            .then(res => res.json())
+            .then(data => {
+                setShowComments(data);
             })
-                .then(res => res.json())
-                .then(data => {
-                    setShowComments(data);
-                })
-                .catch(error => console.error("Error fetching reviews:", error));
-    
+            .catch(error => console.error("Error fetching reviews:", error));
+        
+        // GET PRODUCT DETAIL
         fetch(`http://127.0.0.1:8000/api/store/products/${ID}/`)
             .then(res => res.json())
             .then(data => {
@@ -94,13 +96,14 @@ export default function ProductDetail() {
             },
         })
             .then(res => res.json())
-            .then(data => console(data))
+            .then(data => console.log(data))
             .catch(error => console.error('Error fetching reviews:', error));
     }, [ID, Access]);
 
     if (loading) return <div className="loading">Loading...</div>;
     if (error) return <div className="error">{error}</div>;
 
+    // FORM FOR COMMENT
     const handleFormSubmit = (e) => {
         e.preventDefault();
         if (rating === 0) {
@@ -155,132 +158,204 @@ export default function ProductDetail() {
     
 
     return (
-        <div className="container mt-5">
+        <div className="container mt-3">
             <div className="row">
-                <div className="col-md-3">
-                    <img src={product.image} className="img-fluid rounded-3" alt={product.name} />
+
+                <div className="col-md-3 text-center">
+                    <img 
+                        src={product.image} 
+                        className="img-fluid rounded-4 shadow-sm w-100" 
+                        alt={product.name} 
+                        style={{ maxHeight: "500px", objectFit: "cover" }}
+                    />
                 </div>
+
+                {/* Product Details infos */}
                 <div className="col-md-5">
-                    <div className="product-info">
-                        <h5>{product.name}</h5>
-                        <div className="row mt-5">
-                            {Object.entries(product.custom_features || {}).map(([key, value], index) => (
-                                <div
-                                    className="col-md-4 mb-1 rounded-3 gap-2 text-center p-3 rounded"
-                                    key={index}
-                                    style={{
-                                        backgroundColor: "#f6f6f6",
-                                        border: "1px solid #ddd",
-                                        borderRadius: "8px",
-                                    }}
-                                >
-                                    <strong>{key}</strong>: {value}
+                    <h4 className="fw-bold text-black mt-3">{product.name}</h4>
+                
+                    {/* Custom Features */}
+                    <div className="row mt-3">
+                        {Object.entries(product.custom_features || {}).map(([key, value], index) => (
+                            <div className="col-md-4 col-6 mb-3 mt-2" key={index}>
+                                <div className="p-3 rounded-3 text-center shadow-sm bg-light border ">
+                                    <strong className="text-secondary">{key}</strong>
+                                    <br />
+                                    <span className="fw-bold">{value}</span>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-                <div className="col-md-3 rounded-3 border" style={{ backgroundColor: "#f6f6f6" }}>
-                    <span className='fw-bold'>
-                        <br />
-                        <span><i className="bi bi-shop fs-5 text-success p-3"></i></span>
-                        فروشنده
-                    </span>
-                    <br />
-                    <strong className='me-3'><i class="bi bi-list text-primary me-3 ms-1"></i>{product.seller_store_name}</strong>
-                    <br />
+
+                <div className="col-md-3 p-3 rounded-3 border bg-light shadow-sm">
+                    {/* Seller info */}
+                    <div className="d-flex align-items-center mb-3">
+                        <i className="bi bi-shop fs-4 text-success me-2"></i>
+                        <span className="fw-bold me-1">فروشنده</span>
+                    </div>
+                    <div className="d-flex align-items-center">
+                        <i className="bi bi-list text-primary me-2"></i>
+                        <strong className="me-1">{product.seller_store_name}</strong>
+                    </div>
                     <hr />
-                    <p className="text-start mt-3">
-                        <span className='fw-bold'>
-                            {product.formatted_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                        </span>
-                    </p>
-                    <div className="text-center">
-                        <br></br>
-                        <small className="text-danger fw-bold">تعداد موجودی در انبار {product.stock}</small>
+
+                    {/* Price Section */}
+                    <div className="mt-3">
+                        <div className="text-end">قیمت :</div>
+                        {product.sale_price ? (
+                            <div className="text-start">
+                                <span className="fw-bold text-danger fs-5">
+                                    {product.formatted_sale_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                </span>
+                                <br />
+                                <span className="fw-bold text-muted me-2" style={{ textDecoration: "line-through" }}>
+                                    {product.formatted_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="text-end fw-bold fs-5">
+                                {product.formatted_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            </div>
+                        )}
                     </div>
-                    <div className="product-actions">
-                        <button
-                            onClick={addToCart}
-                            className="btn btn-warning mt-1 mb-3 border btn-lg w-100"
-                            disabled={addingToCart}
-                        >
-                          <small>
-                            {addingToCart ? 'Adding to Cart...' : 'افزودن به سبدخرید'}
-                          </small>
-                        </button>
+
+                    
+                    {/* Stock Availability */}
+                    <div className="text-end mt-4">
+                        <small className="text-danger fw-bold">تعداد موجودی در انبار: {product.stock}</small>
                     </div>
+
+                    {/* Add To Cart Button */}
+                    <button
+                        onClick={addToCart}
+                        className="btn btn-warning border btn-lg w-100 mt-3"
+                        disabled={addingToCart}
+                    >
+                        {addingToCart ? (
+                            <>
+                                <i className="bi bi-cart-plus me-2"></i> در حال افزودن...
+                            </>
+                        ) : (
+                            <>
+                                <i className="bi bi-cart me-2"></i> افزودن به سبد خرید
+                            </>
+                        )}
+                    </button>
+
                 </div>
             </div>
-
-            <div className="text-center">
-                <h4>توضیحات:</h4>
-                <p className="product-description">
-                    {showFull ? product.description : words.slice(0, 30).join(" ") + "..." }
+            
+            {/* Product Description */}
+            <div className="bg-white p-4 rounded-4 shadow-sm mt-4">
+                <h5 className="fw-bold text-center mb-3">توضیحات محصول</h5>
+                
+                <p className={`text-muted text-center overflow-hidden ${showFull ? "" : "text-truncate"}`} style={{ maxHeight: showFull ? "none" : "3rem" }}>
+                    {product.description}
                 </p>
-                {!showFull && words.length > 30 && (
-                    <button
-                        className="mt-2 px-3 py-1 btn "
-                        onClick={() => setShowFull(true)}
-                    >
-                        <i className="bi bi-arrow-bar-down fs-4"></i>
-                    </button>
+
+                {/* Show More Button */}
+                {!showFull && product.description.length > 100 && (
+                    <div className="text-center">
+                        <button 
+                            className="btn btn-light border mt-2" 
+                            onClick={() => setShowFull(true)}
+                        >
+                            مشاهده بیشتر <i className="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                )}
+
+                {/* Show Less Button */}
+                {showFull && (
+                    <div className="text-center">
+                        <button 
+                            className="btn btn-light border mt-2" 
+                            onClick={() => setShowFull(false)}
+                        >
+                            بستن <i className="bi bi-chevron-up"></i>
+                        </button>
+                    </div>
                 )}
             </div>
 
+
             <div className="row mt-4">
-                <div className="col-md-3 col-sm-12">
-                    <div className="border rounded-4">
-                        <div className="p-3">
-                            <h5 className='mt-2'>دیدگاه کاربران</h5>
-                            {message && <p className="text-info">{message}</p>}
-                            <form onSubmit={handleFormSubmit} className=''>
-                                <div className="d-flex">
-                                    <span className='mt-3'>امتیاز:</span>
-                                    <div className="star-rating mt-3 me-3">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <FaStar
-                                                key={star}
-                                                size={25}
-                                                style={{ cursor: "pointer" }}
-                                                color={star <= (hover || rating) ? "#FFD700" : "#ccc"}
-                                                onClick={() => setRating(star)}
-                                                onMouseEnter={() => setHover(star)}
-                                                onMouseLeave={() => setHover(null)}
-                                            />
-                                        ))}
-                                    </div>
+                {/* Add Comments */}
+                <div className="col-md-4 col-sm-12">
+                    <div className="border rounded-4 shadow-sm bg-white p-4">
+                        <h5 className="text-center mb-3 fw-bold">دیدگاه کاربران</h5>
+                        {message && <p className="text-info text-center">{message}</p>}
+                        
+                        <form onSubmit={handleFormSubmit}>
+                            {/* Star Rating */}
+                            <div className="d-flex align-items-center justify-content-between mb-3">
+                                <span className="fw-bold">امتیاز:</span>
+                                <div className="star-rating">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <FaStar
+                                            key={star}
+                                            size={30}
+                                            style={{ cursor: "pointer" }}
+                                            color={star <= (hover || rating) ? "#FFD700" : "#ccc"}
+                                            onClick={() => setRating(star)}
+                                            onMouseEnter={() => setHover(star)}
+                                            onMouseLeave={() => setHover(null)}
+                                        />
+                                    ))}
                                 </div>
-                                <label className='mt-2'>نظر شما:</label>
-                                <input
-                                    className="review-input"
+                            </div>
+
+                            {/* Comment Input */}
+                            <div className="mb-3">
+                                <label className="fw-bold">ثبت دیدگاه:</label>
+                                <textarea
+                                    className="form-control mt-2"
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                     required
-                                />
-                                <button className="review-btn" type="submit">ارسال نظر</button>
-                            </form>
-                        </div>
+                                    rows="3"
+                                    placeholder="نظر خود را بنویسید..."
+                                ></textarea>
+                            </div>
+
+                            {/* Submit Button */}
+                            <button className="btn btn-warning btn-lg w-100 mt-3">ثبت</button>
+                        </form>
                     </div>
                 </div>
 
-                <div className="col-sm-12 col-md-8">
-                    {ShowComments.map((ShowComment, index) => (
-                        <div key={index} className="comment-item">
-                            <div className="stars">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <i
-                                        key={star}
-                                        className={`bi bi-star${star <= ShowComment.rating ? '-fill' : ''} fs-4 text-warning`}
-                                    ></i>
-                                ))}
-                            </div>
-                            <p className="comment-text">{ShowComment.comment}</p>
-                            <p className="comment-user">By {ShowComment.buyer}</p>
-                        </div>
-                    ))}
+                {/* Show Comments */}
+                <div className="col-md-8 col-sm-12">
+                    <div className="bg-white p-4 rounded-4 shadow-sm">
+                        <h5 className="fw-bold mb-3">نظرات کاربران</h5>
+                        {ShowComments.length === 0 ? (
+                            <p className="text-muted text-center">هنوز نظری ثبت نشده است.</p>
+                        ) : (
+                            ShowComments.map((ShowComment, index) => (
+                                <div key={index} className="border-bottom pb-3 mb-3">
+                                    {/* Stars */}
+                                    <div className="d-flex">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <i
+                                                key={star}
+                                                className={`bi bi-star${star <= ShowComment.rating ? '-fill' : ''} fs-5 text-warning me-1`}
+                                            ></i>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* Comment Text */}
+                                    <p className="mt-2 text-muted">{ShowComment.comment}</p>
+
+                                    {/* Buyer Name */}
+                                    <small className="text-secondary fw-bold"> توسط {ShowComment.buyer_name} {ShowComment.buyer_family_name} </small>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             </div>
+
         </div>
     );
 }

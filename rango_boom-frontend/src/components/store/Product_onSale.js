@@ -4,8 +4,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
-import "./css/Product_bestratings.css";
 import { useNavigate } from "react-router-dom";
+import "./css/Product_bestratings.css";
 
 export default function Product_onSale() {
     const [products, setProducts] = useState([]);
@@ -14,104 +14,91 @@ export default function Product_onSale() {
     useEffect(() => {
         fetch("http://127.0.0.1:8000/api/store/products/?filter_by=on_sale")
             .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setProducts(data || []);
-            })
+            .then((data) => setProducts(data || []))
             .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
     const GetIdProduct = (e) => {
-        const ID = e.currentTarget.getAttribute("data-ID");
+        const ID = e.currentTarget.getAttribute("data-id");
         navigate(`/products/productdatial/${ID}`);
+    };
+
+    // Helper function to truncate text with ellipsis
+    const truncateText = (text, limit) => {
+        return text.length > limit ? text.substring(0, limit) + "..." : text;
     };
 
     return (
         <div className="container">
-            <div className="row rounded-4" style={{ backgroundColor: "#ef4255" }}>
-                <div className="col-md-12 text-white ">
-                    <div className="d-flex justify-content-between" dir="rtl">
-                        <div>
-                            <h4 className="fw-bold font-homa mt-3 me-2">شگفت انگیز</h4>
-                        </div>
+            <div className="row bg-danger rounded-4 p-4 text-white shadow-sm">
+                <div className="col-12">
+                    {/* Title & Navigation */}
+                    <div className="d-flex justify-content-between align-items-center">
+                        <h4 className="fw-bold mb-3">🔥 پیشنهادات ویژه</h4>
                         <div className="d-flex">
-                            <div className="custom-prev h1 fw-bold mx-2 "></div>
-                            <div
-                                className="custom-prev h1 mx-2 mt-2 border border-white px-3"
-                                style={{ borderRadius: "50%" }}
-                            >
-                                ‹
-                            </div>
-                            <div
-                                className="custom-next h1 mx-2 mt-2 border border-white px-3"
-                                style={{ borderRadius: "50%" }}
-                            >
-                                ›
-                            </div>
+                            <div className="custom-prev mx-2 fs-1 cursor-pointer text-white">‹</div>
+                            <div className="custom-next mx-2 fs-1 cursor-pointer text-white">›</div>
                         </div>
                     </div>
 
-                    <div className="swiper-container" style={{ position: "relative" }}>
+                    {/* Swiper Container */}
+                    <div className="swiper-container">
                         <Swiper
                             breakpoints={{
-                                320: { slidesPerView: 2, spaceBetween: 2 },
-                                576: { slidesPerView: 4, spaceBetween: 2 },
-                                768: { slidesPerView: 6, spaceBetween: 2 },
-                                992: { slidesPerView: 7, spaceBetween: 2 },
-                                1200: { slidesPerView: 8, spaceBetween: 2 },
+                                320: { slidesPerView: 2, spaceBetween: 5 },
+                                576: { slidesPerView: 3, spaceBetween: 10 },
+                                768: { slidesPerView: 4, spaceBetween: 15 },
+                                992: { slidesPerView: 5, spaceBetween: 20 },
+                                1200: { slidesPerView: 6, spaceBetween: 20 },
                             }}
-                            navigation={{
-                                prevEl: ".custom-prev",
-                                nextEl: ".custom-next",
-                            }}
+                            navigation={{ prevEl: ".custom-prev", nextEl: ".custom-next" }}
                             modules={[Pagination, Navigation]}
                             className="mySwiper"
                         >
-                            {products && products.length > 0 ? (
+                            {products.length > 0 ? (
                                 products.map((product) => {
-                                    // Shorten the product name to 30 characters
-                                    const shortName = product.name.length > 30
-                                        ? product.name.substring(0, 30) + "..."
-                                        : product.name;
-
-                                    // Check if the product has a sale price and display the appropriate price
+                                    const shortName = truncateText(product.name, 40); // Truncate to 40 characters
                                     const displayPrice = product.sale_price
                                         ? Math.floor(product.sale_price).toLocaleString()
                                         : Math.floor(product.price).toLocaleString();
 
                                     return (
-                                        <SwiperSlide key={product.id} className="bg-white rounded-1">
+                                        <SwiperSlide key={product.id} className="bg-white rounded-3 shadow-sm p-2 ms-2">
                                             <div
                                                 onClick={GetIdProduct}
-                                                data-ID={product.id}
-                                                className="position-relative mt-3"
+                                                data-id={product.id}
+                                                className="position-relative text-center cursor-pointer"
                                             >
                                                 <img
                                                     src={product.image}
                                                     alt={shortName}
-                                                    className="p-1 img-fluid w-100 rounded"
+                                                    className="img-fluid w-100 rounded-1"
+                                                    style={{ maxHeight: "200px", objectFit: "cover" }}
                                                 />
                                             </div>
                                             <div className="p-2 text-center">
-                                                <span className="text-black">{shortName}</span>
-                                                <div className="product-prices text-start">
-                                                    <p className="text-dark font-weight-bold mb-0">
-                                                        {displayPrice}
-                                                        <small className="mx-2">تومان</small>
-                                                    </p>
+                                                {/* Product Name */}
+                                                <p className="text-dark fw-bold" style={{ fontSize: "19px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                                    {shortName}
+                                                </p>
+                                                <div className=" text-start">
 
-                                                    {product.sale_price && (
-                                                        <span
-                                                            className="text-muted text-start"
-                                                            style={{ textDecoration: "line-through" }}
-                                                        >
-                                                            <small>
-                                                            {Math.floor(product.price).toLocaleString()}
+                                                    {/* Pricing Section */}
+                                                    <div className="product-prices">
+                                                        <p className="fw-bold text-danger fs-6 mb-0">
+                                                            {displayPrice}
+                                                            <small className="mx-1">تومان</small>
+                                                        </p>
 
-                                                            <small className="mx-2 font-homa">تومان</small>
-                                                            </small>
-                                                        </span>
-                                                    )}
+                                                        {product.sale_price && (
+                                                            <span
+                                                                className="text-muted text-decoration-line-through fs-6"
+                                                            >
+                                                                {Math.floor(product.price).toLocaleString()}
+                                                                <small className="">تومان</small>
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>

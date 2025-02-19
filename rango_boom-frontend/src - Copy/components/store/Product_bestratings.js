@@ -21,7 +21,7 @@ const Product_bestratings = () => {
     }, []);
 
     const GetIdProduct = (e)=>{
-        const ID = e.currentTarget.getAttribute("data-ID")
+        const ID = e.currentTarget.getAttribute("data-id")
         console.log('====================================');
         console.log(ID);
         console.log('====================================');
@@ -44,7 +44,7 @@ const Product_bestratings = () => {
     {products.length > 0 ? (
         products.map((product) => (
             <SwiperSlide key={product.id}>
-                <div onClick={GetIdProduct} data-ID={product.id} className="product-card">
+                <div onClick={GetIdProduct} data-id={product.id} className="product-card">
                     <img src={product.image} alt={product.name} />
                     <div className="p-2">
                         <span className="product-title">{product.name}</span>

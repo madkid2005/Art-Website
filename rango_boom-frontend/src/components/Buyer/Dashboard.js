@@ -14,7 +14,7 @@ export default function Dashboard() {
             
           09056860284
           </span>
-        <p className=' text-end mt-3 border-top pt-3'><i class="bi bi-house fs-4 ms-2"></i>خلاصه فعالیت </p>
+        <p className=' text-end mt-3 border-top pt-3'><i className="bi bi-house fs-4 ms-2"></i>خلاصه فعالیت </p>
         <p className='fw-bold text-end border-top pt-3'>خلاصه فعالیت </p>
         <p className='fw-bold text-end border-top pt-3'>خلاصه فعالیت </p>
         <p className='fw-bold text-end border-top pt-3'>خلاصه فعالیت </p>

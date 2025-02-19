@@ -39,7 +39,7 @@ class Product(models.Model):
     is_on_sale = models.BooleanField(_("تخفیف خورده ؟"), default=False)
     sale_price = models.DecimalField(_("قیمت تخفیف خورده"), max_digits=10, decimal_places=2, null=True, blank=True)
     # slug
-    slug = models.SlugField(unique=True, blank=True)
+    # slug = models.SlugField(unique=True, blank=True)
     # fast send
     fast_send = models.BooleanField(_(" ارسال سریع ؟" ), default=False)
     # Add custom features as a JSONField
@@ -60,12 +60,12 @@ class Product(models.Model):
     
     formatted_sale_price.short_description = "Price (تومان)"  # Column name in the admin panel
 
-    # auto slug
-    def save(self, *args, **kwargs):
-        """Auto-generate slug"""
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+    # # auto slug
+    # def save(self, *args, **kwargs):
+    #     """Auto-generate slug"""
+    #     if not self.slug:
+    #         self.slug = slugify(self.name)
+    #     super().save(*args, **kwargs)
    
 class Rating(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='ratings', verbose_name=_("محصول"))

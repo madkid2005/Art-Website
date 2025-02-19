@@ -5,12 +5,14 @@ from .models import Product
 
 # Products
 class ProductForm(forms.ModelForm):
-    feature_1_key = forms.CharField(required=True, label="ویژگی ۱ (نام)")
-    feature_1_value = forms.CharField(required=True, label="ویژگی ۱ (مقدار)")
-    feature_2_key = forms.CharField(required=True, label="ویژگی ۲ (نام)")
-    feature_2_value = forms.CharField(required=False, label="ویژگی ۲ (مقدار)")
-    feature_3_key = forms.CharField(required=False, label="ویژگی ۳ (نام)")
-    feature_3_value = forms.CharField(required=False, label="ویژگی ۳ (مقدار)")
+    feature_1_key = forms.CharField(required=True, label=" 1 ویژگی ")
+    feature_1_value = forms.CharField(required=True, label=" مقدار ویژگی ۱ ")
+    
+    feature_2_key = forms.CharField(required=True, label=" 2 ویژگی ")
+    feature_2_value = forms.CharField(required=True, label=" مقدار ویژگی 2 ")
+    
+    feature_3_key = forms.CharField(required=True, label=" 3 ویژگی ")
+    feature_3_value = forms.CharField(required=True, label=" مقدار ویژگی 3 ")
 
     class Meta:
         model = Product

@@ -13,6 +13,7 @@ export default function Navbar() {
   const [cartItems, setCartItems] = useState([]);
   const [userRole, setUserRole] = useState(null); // Store the user's role (buyer/seller)
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Track if the user is authenticated
+  const [selectedId, setSelectedId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -223,7 +224,8 @@ export default function Navbar() {
                         textAlign: "center",
                         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.05)",
                       }}
-                      onClick={() => alert(`انتخاب شد: ${child.name}`)}
+                      // onClick={() =>  setSelectedId(childId);};
+                      
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = "#fff";
                         e.currentTarget.style.boxShadow = "0px 6px 12px rgba(0, 0, 0, 0.15)";

@@ -63,7 +63,7 @@ export default function AccountInfo() {
     <div className="container mt-4">
       <div className="row justify-content-start">
         <div className="col-md-8 col-12">
-          <div class="mt-3 mb-1 me-1">
+          <div className="mt-3 mb-1 me-1">
             <strong>  اطلاعات حساب </strong>  
           </div>  
 
@@ -72,7 +72,7 @@ export default function AccountInfo() {
             <div className="row">
 
               <div className="col-md-6 mt-3 mb-3">
-                <p class="mt-3 me-3">
+                <p className="mt-3 me-3">
                   <i className="bi bi-person-fill mx-3 text-primary"></i>
                   <strong>نام : </strong>
                   {editField === "name" ? (
@@ -91,7 +91,7 @@ export default function AccountInfo() {
                   ></i>
                 </p>
 
-                <p class="mt-3 me-3">
+                <p className="mt-3 me-3">
                   <i className="bi bi-person-fill mx-3 text-primary"></i>
                   <strong>نام خانوادگی : </strong>
                   {editField === "family_name" ? (
@@ -110,7 +110,7 @@ export default function AccountInfo() {
                   ></i>
                 </p>
 
-                <p class="mt-3 me-3">
+                <p className="mt-3 me-3">
                   <i className="bi bi-person-fill mx-3 text-primary"></i>
                   <strong> کدملی  : </strong>
                   {editField === "meli_code" ? (
@@ -129,7 +129,7 @@ export default function AccountInfo() {
                   ></i>
                 </p>
 
-                <p class="mt-3 me-3">
+                <p className="mt-3 me-3">
                   <i className="bi bi-telephone-fill mx-3 text-primary"></i>
                   <strong>شماره تلفن : </strong>
                   
@@ -147,7 +147,7 @@ export default function AccountInfo() {
 
 
 
-              <p class="mt-3">
+              <p className="mt-3">
                   <i className="bi bi-envelope-fill mx-3 text-primary"></i>
                   <strong> سن :</strong>
                   {editField === "age" ? (
@@ -166,7 +166,7 @@ export default function AccountInfo() {
                   ></i>
               </p>
 
-              <p class="mt-3">
+              <p className="mt-3">
                   <i className="bi bi-envelope-fill mx-3 text-primary"></i>
                   <strong>ایمیل :</strong>
                   {editField === "email" ? (
@@ -185,7 +185,7 @@ export default function AccountInfo() {
                   ></i>
                 </p>
 
-                <p class="mt-3">
+                <p className="mt-3">
                   <i className="bi bi-house-door-fill mx-3 text-primary"></i>
                   <strong> کد پستی :</strong>
                   {editField === "zip_code" ? (
@@ -204,7 +204,7 @@ export default function AccountInfo() {
                   ></i>
                 </p>
 
-                <p class="mt-3">
+                <p className="mt-3">
                   <i className="bi bi-house-door-fill mx-3 text-primary"></i>
                   <strong>آدرس :</strong>
                   {editField === "address" ? (
