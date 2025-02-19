@@ -74,6 +74,12 @@ export default function Navbar() {
     setShowPanels(false);
     setChildrenList([]);
   };
+  const selectCategoryID = (e) => {
+    const ID = e.currentTarget.getAttribute("data-id");
+    navigate(`/products/category/${ID}`);
+
+};
+
 
   return (
     <div className="container  d-none d-md-block">
@@ -225,6 +231,7 @@ export default function Navbar() {
                         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.05)",
                       }}
                       // onClick={() =>  setSelectedId(childId);};
+                      onClick={selectCategoryID} data-id={child.id}
                       
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = "#fff";
