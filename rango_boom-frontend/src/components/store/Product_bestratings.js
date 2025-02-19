@@ -44,8 +44,8 @@ const Product_bestratings = () => {
             {products.length > 0 ? (
                 products.map((product) => {
                     const truncatedName =
-                        product.name.length > 20
-                            ? product.name.substring(0, 20) + "..."
+                        product.name.length > 24
+                            ? product.name.substring(0, 24) + "..."
                             : product.name;
 
                     return (
